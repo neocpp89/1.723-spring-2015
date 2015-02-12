@@ -19,7 +19,7 @@ with open('berea_xsection_bot.dat', 'r') as fbot:
     plt.imshow(bot_data, cmap=cmap, norm=norm)
     plt.axis('off')
     cb = plt.colorbar()
-    cb.ax.set_yticklabels(['0', '', '1'])
+    cb.ax.set_yticklabels(['Void', '', 'Solid'])
     plt.gca().set_aspect('equal')
     plt.savefig('bot.pdf')
 
@@ -36,6 +36,6 @@ with open('berea_xsection_top.dat', 'r') as ftop:
     plt.imshow(top_data, cmap=cmap, norm=norm)
     plt.axis('off')
     cb = plt.colorbar()
-    cb.ax.set_yticklabels(['0', '', '1'])
+    cb.ax.set_yticklabels(['Void', '', 'Solid'])
     plt.gca().set_aspect('equal')
     plt.savefig('top.pdf')
