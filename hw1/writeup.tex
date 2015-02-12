@@ -76,7 +76,7 @@ Square windows of various sizes (centered at the origin) are used by the program
 \end{figure}
 
 \subsection{Part 4}
-Using figure \ref{fig:windows}, it looks like we at least need a window size of around 150-200 pixels per edge to get within a few percent of the overall porosity.
+Using figure \ref{fig:windows}, it looks like we at least need a window size of around 150-200 pixels per edge to get within a few percent of the overall porosity. This comes out to a total of around 22500 to 40000 pixels.
 %
 %
 %
@@ -87,10 +87,59 @@ Given that 1 darcy is $9.869233 \times 10^{-13} \mathrm{\ m}^2$, we have
     1 \mathrm{\ d} &= 9.869233 \times 10^{-13} \mathrm{\ m}^2 \frac{10^2 \mathrm{\ cm}}{1 \mathrm{\ m}} \frac{10^2 \mathrm{\ cm}}{1 \mathrm{\ m}} \\
     1 \mathrm{\ d} &= 9.869233 \times 10^{-9} \mathrm{\ cm}^2
 \end{align}
+
+\subsection{Part 2}
+Since kinematic viscosity $\nu = \mu / \rho$ and hydraulic conductivity $K = \rho g k / \mu$ from Nutting (1930), we can rearrange to get
+\begin{align}
+    K = kg/\nu.
+\end{align}
+Substituting, we get 
+\begin{align}
+    K_{\mathrm{w}} &= (9.869233 \times 10^{-9} \mathrm{\ cm}^2)(9.81 \times 10^2 \mathrm{\ cm} \mathrm{\ s}^{-2}) / (1.3 \times 10^{-2} \mathrm{\ cm}^2 \mathrm{\ s}^{-1}) \\
+    &= 7.4475 \times 10^{-4} \mathrm{\ cm} \mathrm{\ s}^{-1}.
+\end{align}
+Similarly
+\begin{align}
+    K_{\mathrm{o}} &= (9.869233 \times 10^{-9} \mathrm{\ cm}^2)(9.81 \times 10^2 \mathrm{\ cm} \mathrm{\ s}^{-2}) / (1.8 \mathrm{\ cm}^2 \mathrm{\ s}^{-1}) \\
+    &= 5.3787 \times 10^{-6} \mathrm{\ cm} \mathrm{\ s}^{-1}
+\end{align}
 %
 %
 %
 \section{Problem 3}
+For each set of data, we have the vector of darcy heights $\mathbf{\Delta h}$ and the vector of flow rates $\mathbf{q}$.
+In each set, the cross sectional area ($A$) is constant and the height of the column ($L$) is constant.
+We want the equation of best fit for $q(\Delta h) = \alpha \Delta h$, so we write
+\begin{align}
+    \mathbf{q} = \mathbf{\Delta h} \alpha.
+\end{align}
+We solve this using the normal equations, given by
+\begin{align}
+    \mathbf{\Delta h}^T \mathbf{q} = \mathbf{\Delta h}^T \mathbf{\Delta h} \alpha
+\end{align}
+which is rearranged to
+\begin{align}
+   \alpha = \frac{\mathbf{\Delta h}^T \mathbf{q}}{\mathbf{\Delta h}^T \mathbf{\Delta h}}.
+\end{align}
+Noting that $\alpha = KA/L$, we can rearrange for the conductivity K.
+Then, using the kinematic viscosity of water from Problem 2 ($\nu_{w} = 0.013\mathrm{\ cm}^2 \mathrm{\ s}^{-1}$), we can obtain the permeabilities via $k = K\nu/g$.
+
+This was done in the excel sheet, along with unit conversions, yielding the results
+\begin{table}[!h]
+\centering
+\begin{tabular}{c | c c c}
+Experiment & K [cm/s] & K [m/d] & k [md] \\
+\hline
+Atmospheric - Series 1 & 0.02849 & 24.617 & 38257 \\
+Atmospheric - Series 2 & 0.01656 & 14.306 & 22232 \\
+Atmospheric - Series 3 & 0.02153 & 18.599 & 28905 \\
+Atmospheric - Series 4 & 0.02152 & 18.595 & 28899 \\
+Pressurized & 0.02751 & 23.765 & 36933
+\end{tabular}
+\end{table}
+
+Unfortunately, these results seem absurdly high (30 darcy is quite large for permeability, at most I would expect 1 darcy), and likewise for the hydraulic conductivity results.
+However, I am unable to spot the error in units.
 
 \appendix
 \section{Programs}
