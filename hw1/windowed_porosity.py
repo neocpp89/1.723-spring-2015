@@ -44,7 +44,7 @@ with open('berea_xsection_top.dat', 'r') as ftop:
 
 plt.figure(figsize=(4,4))
 plt.title('Porosity versus Window Size')
-plt.xlabel(r'Window Edge Size [$\sqrt{\#\mathrm{\ pixels}}$]')
+plt.xlabel(r'Window Edge Size [$\sqrt{\#\mathrm{\ pixels in window}}$]')
 plt.ylabel('Porosity` [-]')
 plt.plot(bot_windowed_porosity[0], bot_windowed_porosity[1], ':k')
 plt.plot(top_windowed_porosity[0], top_windowed_porosity[1], '-b')
