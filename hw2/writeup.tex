@@ -69,10 +69,33 @@ Since $|\mathbf{u}| = \sqrt{u_k u_k} = \sqrt{u_x^2 + u_y^2}$ in 2D, we can write
     \end{bmatrix}
 \end{align}
 \section{Problem 2}
+\subsection{Part 1}
+We first used datathief to get the coordinates of the points shown in figure \ref{fig:datathief}.
+\begin{figure}[!h]
+\includegraphics[scale=1.0]{dt.png}
+\centering
+\label{fig:datathief}
+\end{figure}
+
+Centroids of these three groups of points are calculated, and a line of best fit going through the origin is calculated for both the x and y directions.
+The coefficients of these fits are the interstitial velocity $\mathbf{v} = (0.0581, 0.42534)\ [\mathrm{m} / \mathrm{day}]$.
+The darcy velocity is related to the interstitial velocity through the porosity via $\mathbf{v} \phi = \mathbf{u} = (0.0227, 0.1659)\ [\mathrm{m} / \mathrm{day}]$.
+
+\subsection{Part 2}
+Using the same points as from before, we calculated the longitudinal distance and transverse distance of the plume at each time.
+We then do another linear regression passing through the origin of the form  $y = Dt$, where $y = \frac{1}{2}l^2$, for both the longitudinal and transverse directions.
+We then assume that the longitudinal direction is the direction of the darcy velocity (to simplify analysis), and take
+\begin{align}
+\alpha_L &= \frac{D_L}{|\mathbf{u}|} = 48.84\ [\mathrm{m]}\\
+\alpha_T &= \frac{D_T}{|\mathbf{u}|} = 1.280\ [\mathrm{m}]
+\end{align}
+These values seem large, but dispersivity can vary massively so I do not know if they are unreasonable.
+The large anisotropy, which is evident from the shape change, is captured by having a much smaller value of $\alpha_T$ than $\alpha_L$.
+The spreadsheet with the intermediate calculations is attached.
 
 
-\appendix
-\section{Programs}
+% \appendix
+% \section{Programs}
 % \lstinputlisting[label=code:plotting]{sandstone_figures.py}
 
 \end{document}
