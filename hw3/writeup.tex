@@ -2,6 +2,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{siunitx}
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{hyperref}
@@ -49,23 +50,78 @@
 \maketitle
 
 \section{Problem 1}
+\subsection{Part 1}
 The equation we want to nondimensionalize is given by
 \begin{align}
-    c_t \frac{\partial p}{\partial t} + \frac{\partial}{\partial x} \left( \frac{-k}{\mu} \frac{\partial p}{\partial x} \right).
+    c_t \frac{\partial p}{\partial t} + \frac{\partial}{\partial x} \left( \frac{-k}{\mu} \frac{\partial p}{\partial x} \right) = 0.
     \label{eqn:pressure}
 \end{align}
 
 We note first that all the variables can be written as $x_D = x / x_c$, $p_D = p / p_c$, and etc.
 Moreover, the derivatives are given by $dx_D = dx / x_c$, $dp_D = dp / p_c$, and etc.
 
-We can then rewrite equation \eqref{eqn:pressure} as
+Using the chain rule, we can then rewrite equation \eqref{eqn:pressure} as
 \begin{align}
-    \frac{c_t p_c}{T_c} \frac{\partial p_D}{\partial t_D} + \frac{1}{x_c} \frac{\partial}{\partial x_D} \left( \frac{-k_D k_c}{\mu_D \mu_c} \frac{p_c}{x_c} \frac{\partial p_D}{\partial x_D} \right)
+    \frac{c_t p_c}{T_c} \frac{\partial p_D}{\partial t_D} + \frac{1}{x_c} \frac{\partial}{\partial x_D} \left( \frac{-k_D k_c}{\mu_D \mu_c} \frac{p_c}{x_c} \frac{\partial p_D}{\partial x_D} \right) = 0
 \end{align}
 which can be rearranged into
 \begin{align}
-    \frac{c_t p_c}{T_c} \frac{\partial p_D}{\partial t_D} + \frac{k_c p_c}{x_c^2 \mu_c} \frac{\partial}{\partial x_D} \left( \frac{-k_D}{\mu_D}\frac{\partial p_D}{\partial x_D} \right)
+    \frac{c_t p_c}{T_c} \frac{\partial p_D}{\partial t_D} + \frac{k_c p_c}{x_c^2 \mu_c} \frac{\partial}{\partial x_D} \left( \frac{-k_D}{\mu_D}\frac{\partial p_D}{\partial x_D} \right) = 0.
 \end{align}
+The coefficients can be collected together into
+\begin{align}
+    \frac{\partial p_D}{\partial t_D} + \frac{T_c k_c}{c_t x_c^2 \mu_c} \frac{\partial}{\partial x_D} \left( \frac{-k_D}{\mu_D}\frac{\partial p_D}{\partial x_D} \right) = 0.
+\end{align}
+
+Setting the term
+\begin{align}
+    \frac{T_c k_c}{c_t x_c^2 \mu_c}
+\end{align}
+to unity yields the expression
+\begin{align}
+    T_c = \frac{c_t x_c^2 \mu_c}{k_c} = \frac{c_t L^2 \mu_c}{k_c}
+\end{align}
+
+\subsection{Part 2}
+The Darcy velocity is given by
+\begin{align}
+\mathbf{u} = \frac{-k}{\mu} \nabla p.
+\end{align}
+In 1D we have
+\begin{align}
+u = \frac{-k}{\mu} \frac{\partial p}{\partial x}.
+\end{align}
+Following the same procedure as the time, we arrive at
+\begin{align}
+u_c u_D = \frac{-k_c k_D}{\mu_c \mu_D} \frac{p_c}{x_c} \frac{\partial p_D}{\partial x_D},
+\end{align}
+and after collecting terms and substituting we have
+\begin{align}
+u_c = \frac{k_c p_c}{\mu_c L}.
+\end{align}
+
+\subsection{Part 3}
+We calculate the above quantities given
+\begin{align}
+    L &= \num{1e3}\ \si{\meter} \\
+    k_c &= \num{1e-13}\ \si{\meter\squared} \\
+    \mu_c &= \num{1e-3}\ \si[inter-unit-product = \ensuremath{{}\cdot{}}]{\pascal\second} \\
+    c_t &= \num{1e-8}\ \si{\per\pascal} \\
+    \Delta P_c &= \num{1e5}\ \si{\pascal}.
+\end{align}
+
+Plugging in yields
+\begin{align}
+    T_c = \frac{c_t L^2 \mu_c}{k_c} = \frac{10^{-8} (10^3)^2 10^{-3}}{10^{-13}}\ \si{\second} = 10^8\ \si{\second}
+\end{align}
+(which seems a bit long at approximately 3 years) and
+\begin{align}
+    u_c = \frac{k_c p_c}{\mu_c L} = \frac{10^{-13} 10^5}{10^{-3} 10^3} = 10^{-8}\ \si{\meter\per\second}.
+\end{align}
+
+
+\section{Problem 2}
+\subsection{Part 1}
 
 % \appendix
 % \section{Programs}
