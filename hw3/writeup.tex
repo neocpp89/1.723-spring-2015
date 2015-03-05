@@ -123,6 +123,120 @@ Plugging in yields
 \section{Problem 2}
 \subsection{Part 1}
 
+We want to solve the nondimensionalized equation
+\begin{align}
+    \frac{\partial p}{\partial t} + \frac{\partial}{\partial x} \left( -\lambda \frac{\partial p}{\partial x} \right) = 0
+\end{align}
+(with $\lambda = 1$) subject to the boundary conditions
+\begin{align}
+    p(0, t) &= 1 \\
+    -\lambda \frac{\partial p}{\partial x}\bigg\rvert_{x=1} &= 0
+\end{align}
+for $t > 0$ and initial condition
+\begin{align}
+p(x, 0) = 0.
+\end{align}
+
+We note that the boundary conditions are not homogenous.
+We first calculate the steady state solution $p_s(x)$ given by
+\begin{align}
+    \frac{\partial^2 p_s}{\partial x^2} = 0
+\end{align}
+with boundary conditions
+\begin{align}
+    p_s(0) &= 1 \\
+    -\frac{\partial p_s}{\partial x}\bigg\rvert_{x=1} &= 0.
+\end{align}
+The general solution is found by integrating twice to obtain
+\begin{align}
+    p_s(x) = Ax + B.
+\end{align}
+Using the BCs we obtain $p_s(0) = B = 1$ and $p_s'(1) = A = 0$, so the steady state solution is the constant $p_s(x) = 1$.
+
+We now transform the equation for $p(x,t)$ to an equation for $p_t(x,t)$ given by $p(x,t) = p_t(x,t) + p_s(x)$.
+Plugging in and substituting yields
+\begin{align}
+    \frac{\partial p_t}{\partial t} + \frac{\partial}{\partial x} \left( - \frac{\partial p_t}{\partial x} \right) = 0
+    \label{eqn:p-transient}
+\end{align}
+with boundary conditions
+\begin{align}
+    p_t(0, t) &= 0 \\
+    -\frac{\partial p_t}{\partial x}\bigg\rvert_{x=1} &= 0
+\end{align}
+(which are homogenous) and initial condition
+\begin{align}
+    p_t(x, 0) = -1.
+\end{align}
+
+We solve equation \eqref{eqn:p-transient} by using separation of variables. Assume we can decompose as $p_t(x,t) = X(x)T(t)$.
+We then arrive at the equation
+\begin{align}
+    X(x)T'(t) - T(t)X''(x) = 0,
+\end{align}
+which can be expressed as the pair of equations
+\begin{align}
+    \frac{X''(x)}{X(x)} = \frac{T'(t)}{T(t)} = -\omega^2
+\end{align}
+We can use the characteristic roots to obtain the general solutions $X(x) = A\sin(\omega x) + B\cos(\omega x)$ and $T(t) = C\exp(-\omega^2 t)$, where $A$, $B$, and $C$ are arbitrary constants.
+Without loss of generality we can absorb the constant $C$ to obtain the general solution for $p_t(x,t) = (\tilde{A}\sin(\omega x) + \tilde{B}\cos(\omega x))\exp(-\omega^2 t)$.
+This solution must satisfy the boundary conditions, so we know that
+\begin{align}
+    p_t(0, t) &= 0 \\
+    \tilde{B} \exp(-\omega^2 t) &= 0 \implies \tilde{B} = 0
+\end{align}
+and
+\begin{align}
+    -\frac{\partial p_t}{\partial x}\bigg\rvert_{x=1} &= 0 \\
+    \tilde{A}\omega \cos(\omega) &= 0.
+\end{align}
+Since we don't want the trivial solution (when $\tilde{A} = 0$), we instead set $\cos(\omega) = 0$ by forcing special values of $\omega$.
+In this case, we want $\omega = \frac{\pi}{2} (2n - 1)$ where $n$ is a whole number.
+This generates a new solution for each $\omega$, which each satisfy the (homogenous) PDE, so we can sum them together and still get a solution.
+Thus, we can write
+\begin{align}
+    p_t(x,t) = \sum_{n=1}^{\infty} a_n \sin\left(\frac{\pi}{2} (2n - 1) x\right) \exp\left(-\frac{\pi^2}{4} (2n - 1)^2 t \right)
+\end{align}
+
+We determine the $a_n$ by first noting that
+\begin{align}
+    \int_0^1 \sin\left(\frac{\pi}{2} (2n - 1) x\right) \sin\left(\frac{\pi}{2} (2m - 1) x\right) \mathrm{dx} = \frac{1}{2} \delta_{mn}
+\end{align}
+where $\delta_{mn} = 1$ if $m = n$ and $0$ otherwise.
+The orthogonality of the sines allows us to determine $a_n$ by simply integrating the initial conditions against the corresponding sine function, yielding
+\begin{align}
+a_n &= 2 \int_0^1 (-1) \sin\left(\frac{\pi}{2} (2n - 1) x\right) \mathrm{dx} \\
+    &= -2 \frac{2}{\pi (2n - 1)} \cos\left(\frac{\pi}{2} (2n - 1) x\right) \bigg\rvert_{x=0}^{x=1} \\
+a_n &= \frac{-4}{\pi (2n - 1)}.
+\end{align}
+
+The complete solution for $p_t(x,t)$ is then
+\begin{align}
+    p_t(x,t) = \sum_{n=1}^{\infty} \frac{-4}{\pi (2n - 1)} \sin\left(\frac{\pi}{2} (2n - 1) x\right) \exp\left(-\frac{\pi^2}{4} (2n - 1)^2 t \right)
+\end{align}
+and likewise $p(x,t) = p_t(x,t) + p_s(x)$ is given by
+\begin{align}
+    p(x,t) = 1 + \sum_{n=1}^{\infty} \frac{-4}{\pi (2n - 1)} \sin\left(\frac{\pi}{2} (2n - 1) x\right) \exp\left(-\frac{\pi^2}{4} (2n - 1)^2 t \right)
+\end{align}
+
+When numerically evaulating this, we note that increasing $n$ results in a smaller contribution to the total solution, since each term has at least an $\exp\left(-\frac{\pi^2}{4} (2n - 1)^2 t \right)$ factor and sine is bounded to have a magnitude of 1 at most.
+Moreover, the $a_n$ have a maximum magnitude of $-4/\pi$ at $n=1$.
+This means we can conservatively estimate the maximum contribution of term $n$ as the exponential part alone.
+If we are given a time $t$, we can ensure that no term beyond $n$ contributes more than $\epsilon$ error when we reach term
+\begin{align}
+n = \Bigg\lceil \frac{1}{2}\left(1 + \frac{2}{\pi} \sqrt{\frac{-\log{\epsilon}}{t}}\right) \Bigg\rceil
+\end{align}
+and moreover this converges quickly since each term is exponentially smaller than the previous one.
+We implemented this in the plotting code used to generate figure \ref{fig:p_analytic}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=1.0]{p_over_time.pdf}
+    \caption{The nondimensional pressure distribution $p(x,t)$ is plotted at various nondimensional times.
+    We see that even by $t=2.0$, the solution is almost completely at the steady-state solution of $p(x,t) = 1$.}
+    \label{fig:p_analytic}
+\end{figure}
+
 % \appendix
 % \section{Programs}
 % \lstinputlisting[label=code:plotting]{sandstone_figures.py}
