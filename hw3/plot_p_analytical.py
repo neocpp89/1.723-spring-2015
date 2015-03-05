@@ -18,16 +18,17 @@ def p_analytic(t, npts=100, eps=1e-6):
     Y += np.ones([npts]) # v(x) = 1
     return (X, Y)
 
-pylab.figure(figsize=(3,3))
-pylab.xlabel("$x$ [-]")
-pylab.ylabel("$p$ [-]")
-pylab.title("Spatial Pressure Distribution for various times\n(all dimensionless)")
-times = [0.001, 0.01, 0.1, 1.0, 2.0]
-for t in times:
-    X, Y = p_analytic(t)
-    pylab.plot(X, Y)
-pylab.legend(map(lambda t: "$p(x,{})$".format(t), times), loc="center right")
-pylab.xlim([0,1])
-pylab.ylim([0,1])
-pylab.tight_layout(pad=0.3)
-pylab.savefig('p_over_time.pdf')
+if (__name__ == "__main__"):
+    pylab.figure(figsize=(3,3))
+    pylab.xlabel("$x$ [-]")
+    pylab.ylabel("$p$ [-]")
+    pylab.title("Spatial Pressure Distribution for various times\n(all dimensionless)")
+    times = [0.001, 0.01, 0.1, 1.0, 2.0]
+    for t in times:
+        X, Y = p_analytic(t)
+        pylab.plot(X, Y)
+    pylab.legend(map(lambda t: "$p(x,{})$".format(t), times), loc="center right")
+    pylab.xlim([0,1])
+    pylab.ylim([0,1])
+    pylab.tight_layout(pad=0.3)
+    pylab.savefig('p_over_time.pdf')

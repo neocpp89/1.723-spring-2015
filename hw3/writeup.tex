@@ -224,10 +224,14 @@ Moreover, the $a_n$ have a maximum magnitude of $-4/\pi$ at $n=1$.
 This means we can conservatively estimate the maximum contribution of term $n$ as the exponential part alone.
 If we are given a time $t$, we can ensure that no term beyond $n$ contributes more than $\epsilon$ error when we reach term
 \begin{align}
-n = \Bigg\lceil \frac{1}{2}\left(1 + \frac{2}{\pi} \sqrt{\frac{-\log{\epsilon}}{t}}\right) \Bigg\rceil
+n_{\mathrm{max}} = \Bigg\lceil \frac{1}{2}\left(1 + \frac{2}{\pi} \sqrt{\frac{-\log{\epsilon}}{t}}\right) \Bigg\rceil
 \end{align}
 and moreover this converges quickly since each term is exponentially smaller than the previous one.
-We implemented this in the plotting code used to generate figure \ref{fig:p_analytic}
+We also can sum in reverse order (that is down from $n_{\mathrm{max}}$ to 1, essentially from small to large terms) to prevent too much error in the naive summation.
+We implemented both the cutoff and the reverse sum in the plotting code used to generate figure \ref{fig:p_analytic}.
+
+Due to the exponential, it doesn't take long to get close to the steady state.
+Even by $t=2.0$, the solution is nearly indistinguishable from the steady state case.
 
 \begin{figure}[!ht]
     \centering
@@ -236,6 +240,112 @@ We implemented this in the plotting code used to generate figure \ref{fig:p_anal
     We see that even by $t=2.0$, the solution is almost completely at the steady-state solution of $p(x,t) = 1$.}
     \label{fig:p_analytic}
 \end{figure}
+
+\subsection{Part 2}
+For the spatial discretization we use the cell-centered finite volume method.
+This means that the solution $p_i$ exists at locations $x_i = i*h + h/2$ where $h = 1/N$, $N$ the number of grid points.
+The next flux for each cell is given by
+\begin{align}
+    \frac{\partial p}{\partial t} = -\frac{F_{i+1/2} - F_{i-1/2}}{h}.
+\end{align}
+The $F_{i \pm 1/2}$ are in turn given by
+\begin{align}
+    F_{i + 1/2} &= \frac{p_{j+1} - p_j}{h} \\
+    F_{i - 1/2} &= \frac{p_{j} - p_{j-1}}{h}.
+\end{align}
+
+We use the trapezoidal rule in time, which is given by
+\begin{align}
+   p_n^{t+1} = p_n^{t} + \Delta t \left( \theta f(p^{t+1}) + (1 - \theta) f(p^{t}) \right)
+\end{align}
+
+Combining yields the following rule, applicable to interior points
+\begin{align}
+   p_n^{t+1} = p_n^{t} + \frac{\Delta t}{h^2}\left( (p_{n+1}^{t+1} - 2p_n^{t+1} + p_{n-1}^{t+1}) \theta +  (p_{n+1}^{t} - 2p_n^{t} + p_{n-1}^{t}) (1 - \theta) \right)
+\end{align}
+
+For boundaries, we must determing the value of the ghost point to enforce the BC and build it into the equation.
+For the left side, we want the dirichlet BC $p(0,t) = 1$.
+Averaging the cell centers achieves this; if $p_1$ is the leftmost cell center in the computational domain, $p_0$ is the ghost point.
+The boundary condition is then
+\begin{align}
+    \frac{1}{2}(u_0 + u_1) = 1 \implies u_0 = 2 - u_1,
+\end{align}
+which is the substituted into the general form to obtain
+\begin{align}
+    p_1^{t+1} = p_1^{t} + \frac{\Delta t}{h^2}\left( (p_{2}^{t+1} - 3p_n^{t+1} + 2) \theta +  (p_{2}^{t} - 3p_1^{t} + 2) (1 - \theta) \right)
+\end{align}
+
+The right boundary (after $p_4$) is given by a zero slope condition, which is equivalent to setting the flux term to zero, which gives
+\begin{align}
+    F_{9/2} = 0 \implies -p_4 = p_5.
+\end{align}
+This is also substituted into the general form, which yields
+\begin{align}
+   p_4^{t+1} = p_4^{t} + \frac{\Delta t}{h^2}\left( (p_{5}^{t+1} - p_4^{t+1}) \theta +  (p_{5}^{t} - p_4^{t}) (1 - \theta) \right).
+\end{align}
+
+With the boundary conditions, interior points, and initial condition (given by the zero vector), we have enough information to simulate the system.
+
+First we define the matrix $\mathbf{A}$ by
+\begin{align}
+    \mathbf{A} = \frac{\Delta t}{h^2} \begin{bmatrix}
+                    -3 & 1 & 0 & 0 \\
+                    1 & -2 & 1 & 0 \\
+                    0 & 1 & -2 & 1 \\
+                    0 & 0 & 1 & -1
+                \end{bmatrix},
+\end{align}
+and the additional load vector $\tilde{\mathbf{p}}$ as
+\begin{align}
+\tilde{\mathbf{p}} = \frac{\Delta t}{h^2} \begin{bmatrix}
+                    2 \\
+                    0 \\
+                    0 \\
+                    0
+                    \end{bmatrix}.
+\end{align}
+
+The system of equations is then written as
+\begin{align}
+    (\mathbf{I} - \theta \mathbf{A}) \mathbf{p}^{t+1} = (\mathbf{I} - (1 - \theta) \mathbf{A}) \mathbf{p}^t + \tilde{\mathbf{p}}
+\end{align}
+Where $\mathbf{I}$ is the identity matrix (4 by 4 in this case).
+Note also that $p^{t+1} = p^{t+\Delta t}$. This is equivalent to the matrix equation
+\begin{align}
+    \tilde{\mathbf{A}} \tilde{\mathbf{x}} = \tilde{\mathbf{b}}
+\end{align}
+where the unknowns $\tilde{\mathbf{x}} = \mathbf{p}^{t+1}$, the matrix $\tilde{\mathbf{A}} = \mathbf{I} - \theta \mathbf{A}$, and the load $\tilde{\mathbf{b}} = (\mathbf{I} - (1 - \theta) \mathbf{A}) \mathbf{p}^t + \tilde{\mathbf{p}}$.
+
+
+\subsection{Part 3}
+The code is attached, but I will reproduce it here as well (I am sorry, but I did not have access to MATLAB since I am away at APS March Meeting, so I used python instead).
+\lstinputlisting[label=code:integrate]{integrate_pressure.py}
+
+\subsection{Part 4}
+The numerical integration is very close to the analytical solutions, so I will instead plot the difference $p_{\mathrm{numeric}}(x,t_n) - p_{\mathrm{analytic}}(x,t_n)$ for various $t_n$.
+
+\begin{tabular}{c c}
+\includegraphics[scale=1.0]{error_backward_small.pdf} &
+\includegraphics[scale=1.0]{error_forward_small.pdf}
+\end{tabular}
+
+As shown above, the error is fairly small for both methods. However, in terms of computational time, the forward method takes much less time because there is no matrix inversion done.
+
+\subsection{Part 5}
+It appears that the Forward Euler ($\theta = 0$) scheme is unstable, as the solution quickly develops oscillations and is not able to continue for long after that.
+We can see this from the plots of error below (values not drawn are infinite).
+
+\begin{tabular}{c c}
+\includegraphics[scale=1.0]{error_backward_large.pdf} &
+\includegraphics[scale=1.0]{error_forward_large.pdf}
+\end{tabular}
+
+This is because we have violated the CFL condition, which states that a function of timestep and grid size must not exceed a critical value.
+For diffusion problems this is formulated as $\Delta t  / h^2 < C$.
+The backward euler method suffers a bit in accuracy, but it remains stable.
+The computational time remains large in comparision to the forward method, though this is no surprise.
+
 
 % \appendix
 % \section{Programs}
