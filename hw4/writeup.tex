@@ -57,7 +57,9 @@ From the previous homework, we have the (nondimensionalized) 1D pressure equatio
 Setting $\lambda = 1$ for ease of analysis, the two point flux approximation and Crank-Nicolson time stepping yields the discretization
 \begin{align}
    p_n^{t+1} = p_n^{t} + \frac{\Delta t}{2 h^2}\left( (p_{n+1}^{t+1} - 2p_n^{t+1} + p_{n-1}^{t+1}) +  (p_{n+1}^{t} - 2p_n^{t} + p_{n-1}^{t}) \right).
+    \label{eqn:cn-disc}
 \end{align}
+
 For spatial discretization error, we will drop the time superscripts. Taylor expanding the pressure around the point $x_n$ at time $t$ and evaulating at $x_{n \pm 1}$ generates the pair
 \begin{align}
     p_{n+1} &= p_n + (x_{n+1} - x_n) \frac{\partial p}{\partial x} + \frac{1}{2} (x_{n+1} - x_n)^2 \frac{\partial^2 p}{\partial x^2} + \frac{1}{6} (x_{n+1} - x_n)^3 \frac{\partial^3 p}{\partial x^3} + O((x_{n+1} - x_n)^4) \\
@@ -77,6 +79,94 @@ Since the steady-state equation (with $\lambda = 1$)is given by
 \frac{\partial^2 p}{\partial x^2} = 0,
 \end{align}
 it is clear that our spatial discretization error is $O(h^2)$ (second order).
+
+For the temporal discretization error, we first taylor expand the intermeditate pressure $p^{t+1/2}_n$ from both time $t$ and time $t+1$ (remembering that $t+ 1 - t = \Delta t$), yielding
+\begin{align}
+    p^{t+1/2}_{n} &= p^{t}_{n} + \frac{\Delta t}{2} \dot{p}^{t}_{n} + O(\Delta t^2) \\
+    p^{t+1/2}_{n} &= p^{t+1}_{n} - \frac{\Delta t}{2} \dot{p}^{t+1}_{n} + O(\Delta t^2).
+\end{align}
+Subtracting the first equation from the second and rearranging results in
+\begin{align}
+    p^{t+1}_{n} = p^{t}_{n} + \frac{\Delta t}{2} (\dot{p}^{t}_{n} + \dot{p}^{t+1}_{n}) + O(\Delta t^2).
+\end{align}
+Since we know $\dot{p} = \lambda \frac{\partial^ p}{\partial x^2}$, we can substitute the spatial discretization at times $t$ and $t+1$ into the above equation.
+Comparing the resulting expression to equation \eqref{eqn:cn-disc} shows that they are identical save for the $O(\Delta t)^2$, meaning the temporal discreization is second order as well. The Crank-Nicolson discretization is second order in space and time with the pressure equation.
+
+\section{Problem 2}
+The discretization of the one dimensional pressure equation with Backward Euler time stepping (and setting $\lambda = 1$ for ease of analysis) is given by
+\begin{align}
+   p_n^{t+1} = p_n^{t} + \frac{\Delta t}{h^2}\left( p_{n+1}^{t+1} - 2p_n^{t+1} + p_{n-1}^{t+1} \right).
+    \label{eqn:be-disc}
+\end{align}
+For Von Neumann stability analysis, we assume exponential solutions in space and time and plug into the pressure. For a single wavenumber, we write this as
+\begin{align}
+    p^{t}_{n} &= C \exp(t+ikn) \\
+    p^{t}_{n-1} &= C \exp(t+ikn) \exp(-ikh) \\
+    p^{t}_{n+1} &= C \exp(t+ikn) \exp(ikh)\\
+    p^{t+1}_{n-1} &= C \exp(t+ikn) \exp(\Delta t) \exp(-ikh)\\
+    p^{t+1}_{n} &= C \exp(t+ikn) \exp(\Delta t)\\
+    p^{t+1}_{n+1} &= C \exp(t+ikn) \exp(\Delta t) \exp(ikh).
+\end{align}
+Substituting these equations into the discretization results in
+\begin{align*}
+    C \exp(t+ikn) \exp(\Delta t) &= C \exp(t+ikn) + \frac{\Delta t}{h^2} (C \exp(t+ikn) \exp(\Delta t) \exp(ikh) - \\
+                                & 2 C \exp(t+ikn) \exp(\Delta t) + C \exp(t+ikn) \exp(\Delta t) \exp(-ikh)),
+\end{align*}
+which can be rearranged to
+\begin{align}
+    \exp(\Delta t) &= 1 + \exp(\Delta t) \frac{\Delta t}{h^2} \left( \exp(ikh) - 2 + \exp(-ikh) \right),
+\end{align}
+
+Since the amplification of errors is proportional to $p^{t+1}_{n} / p^{t}_{n}$, we have
+\begin{align}
+    G \equiv \exp(\Delta t) &\implies G = 1 + G \frac{\Delta t}{h^2} \left( \exp(ikh) - 2 + \exp(-ikh) \right) \\
+    G &= \frac{h^2} {h^2 - \Delta t \left( \exp(ikh) - 2 + \exp(-ikh) \right)},
+\end{align}
+which can be rewritten as
+\begin{align}
+    G &= \frac{1} {1 + R \sin^2 (kh/2)}
+\end{align}
+where $R = \frac{4 \Delta t}{h^2}$. Since $\sin^2(x) \ge 0$, the amplification factor $G \le 1$, so the method is unconditionally stable.
+
+\section{Problem 3}
+We first write the linear advection equation as
+\begin{align}
+    \frac{\partial c}{\partial t} + u \frac{\partial c}{\partial x} = 0.
+\end{align}
+Without loss of generality, assume that $u$ is positive. The discretization with an upwind derivative and the Backward Euler method is then given by
+\begin{align}
+    \frac{c^{t+1}_n - c^t_n}{\Delta t} + u \frac{c^{t+1}_n - c^{t+1}_{n-1}}{h} = 0,
+\end{align}
+while for Forward Euler it is given by
+\begin{align}
+    \frac{c^{t+1}_n - c^t_n}{\Delta t} + u \frac{c^{t}_n - c^{t}_{n-1}}{h} = 0.
+\end{align}
+
+To analyze the discretization error, we Taylor expand $c$ at time $t$ and position $n$ around the time $t+1$ (for Backward Euler).
+In Forward Euler, we instead expand $c$ at time $t+1$ and position $n$ around the time $t$.
+We also Taylor expand $c$ at arbitrary time $t$ and position $n$ around position $n-1$. These three expansions are given by
+\begin{align}
+    c^{t}_{n} &= c^{t+1} - \Delta t \dot{c}^{t+1}_n + O(\Delta t^2) \\
+    c^{t+1}_{n} &= c^{t}_n + \Delta t \dot{c}^{t}_n + O(\Delta t^2) \\
+    c^{t}_{n} &= c^{t}_{n-1} + h \left( \frac{\partial c}{\partial x} \right)^{t}_{n-1} + O(h^2)
+\end{align}
+Substitution of the first and third equation (multiplied by $u$) into the backward euler discretization yields
+\begin{align}
+    \dot{c}^{t}_n + u - O(\Delta t) + \left( \frac{\partial c}{\partial x} \right)^{t}_{n-1} - O(h) = 0,
+\end{align}
+so the modified equation is then
+\begin{align}
+    \frac{\partial c}{\partial t} + u \frac{\partial c}{\partial x} = O(h) + O(\Delta t).
+\end{align}
+Thus, the method is first order in both space and time.
+
+Repeating the analysis for the forward euler scheme (using the second and third equations this time), we arrive at the modified equation
+\begin{align}
+    \frac{\partial c}{\partial t} + u \frac{\partial c}{\partial x} = O(h) - O(\Delta t).
+\end{align}
+
+Note that the $O(h)$ term contains a diffusion-like expression ($\frac{\partial^2 c}{\partial x^2}$) due to the Taylor expansion.
+We see that from the signs of the $O(h)$ and $O(\Delta t)$ the diffusion-like term is larger for the Backward Euler method than the Forward Euler, so we expect more diffusion from the Backward Euler scheme.
 
 % \appendix
 % \section{Programs}
