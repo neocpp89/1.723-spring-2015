@@ -100,26 +100,26 @@ The discretization of the one dimensional pressure equation with Backward Euler 
 \end{align}
 For Von Neumann stability analysis, we assume exponential solutions in space and time and plug into the pressure. For a single wavenumber, we write this as
 \begin{align}
-    p^{t}_{n} &= C \exp(t+ikn) \\
-    p^{t}_{n-1} &= C \exp(t+ikn) \exp(-ikh) \\
-    p^{t}_{n+1} &= C \exp(t+ikn) \exp(ikh)\\
-    p^{t+1}_{n-1} &= C \exp(t+ikn) \exp(\Delta t) \exp(-ikh)\\
-    p^{t+1}_{n} &= C \exp(t+ikn) \exp(\Delta t)\\
-    p^{t+1}_{n+1} &= C \exp(t+ikn) \exp(\Delta t) \exp(ikh).
+    p^{t}_{n} &= C \exp(\omega t+ikn) \\
+    p^{t}_{n-1} &= C \exp(\omega t+ikn) \exp(-ikh) \\
+    p^{t}_{n+1} &= C \exp(\omega t+ikn) \exp(ikh)\\
+    p^{t+1}_{n-1} &= C \exp(\omega t+ikn) \exp(\Delta t) \exp(-ikh)\\
+    p^{t+1}_{n} &= C \exp(\omega t+ikn) \exp(\Delta t)\\
+    p^{t+1}_{n+1} &= C \exp(\omega t+ikn) \exp(\Delta t) \exp(ikh).
 \end{align}
 Substituting these equations into the discretization results in
 \begin{align*}
-    C \exp(t+ikn) \exp(\Delta t) &= C \exp(t+ikn) + \frac{\Delta t}{h^2} (C \exp(t+ikn) \exp(\Delta t) \exp(ikh) - \\
-                                & 2 C \exp(t+ikn) \exp(\Delta t) + C \exp(t+ikn) \exp(\Delta t) \exp(-ikh)),
+    C \exp(\omega t+ikn) \exp(\Delta t) &= C \exp(\omega t+ikn) + \frac{\Delta t}{h^2} (C \exp(\omega t+ikn) \exp(\Delta t) \exp(ikh) - \\
+                                & 2 C \exp(\omega t+ikn) \exp(\Delta t) + C \exp(\omega t+ikn) \exp(\Delta t) \exp(-ikh)),
 \end{align*}
 which can be rearranged to
 \begin{align}
-    \exp(\Delta t) &= 1 + \exp(\Delta t) \frac{\Delta t}{h^2} \left( \exp(ikh) - 2 + \exp(-ikh) \right),
+    \exp(\omega \Delta t) &= 1 + \exp(\omega \Delta t) \frac{\Delta t}{h^2} \left( \exp(ikh) - 2 + \exp(-ikh) \right),
 \end{align}
 
 Since the amplification of errors is proportional to $p^{t+1}_{n} / p^{t}_{n}$, we have
 \begin{align}
-    G \equiv \exp(\Delta t) &\implies G = 1 + G \frac{\Delta t}{h^2} \left( \exp(ikh) - 2 + \exp(-ikh) \right) \\
+    G \equiv \exp(\omega \Delta t) &\implies G = 1 + G \frac{\Delta t}{h^2} \left( \exp(ikh) - 2 + \exp(-ikh) \right) \\
     G &= \frac{h^2} {h^2 - \Delta t \left( \exp(ikh) - 2 + \exp(-ikh) \right)},
 \end{align}
 which can be rewritten as
@@ -167,6 +167,46 @@ Repeating the analysis for the forward euler scheme (using the second and third 
 
 Note that the $O(h)$ term contains a diffusion-like expression ($\frac{\partial^2 c}{\partial x^2}$) due to the Taylor expansion.
 We see that from the signs of the $O(h)$ and $O(\Delta t)$ the diffusion-like term is larger for the Backward Euler method than the Forward Euler, so we expect more diffusion from the Backward Euler scheme.
+
+\section{Problem 4}
+The discretization of the linear advection equation using a Forward Euler and centered two point flux approximation is given by
+\begin{align}
+    \frac{c^{t+1}_n - c^t_n}{\Delta t} + u \frac{c^{t}_{n+1} - c^{t}_{n-1}}{2h} = 0.
+\end{align}
+As before, we assume an exponential solution in both time and space to see how errors grow, leading to the defintions
+\begin{align}
+    c^{t}_{n} &= C \exp(\omega t+ikn) \\
+    c^{t}_{n-1} &= C \exp(\omega t+ikn) \exp(-ikh) \\
+    c^{t}_{n+1} &= C \exp(\omega t+ikn) \exp(ikh)\\
+    c^{t+1}_{n} &= C \exp(\omega t+ikn) \exp(\Delta t).
+\end{align}
+Substitution into the discretization results in
+\begin{align*}
+C \exp(\omega t+ikn) \exp(\Delta t) &- C \exp(\omega t+ikn) + \\
+    & \frac{u \Delta t}{2h} (C \exp(\omega t+ikn) \exp(ikh) - C \exp(\omega t+ikn) \exp(-ikh)) = 0,
+\end{align*}
+which becomes (after factoring)
+\begin{align}
+\exp(\omega \Delta t) - 1 + \frac{u \Delta t}{2h} (\exp(ikh) - \exp(-ikh)) = 0,
+\end{align}
+and can be rewritten as
+\begin{align}
+\exp(\omega \Delta t) - 1 + \frac{u \Delta t}{h} i \sin(kh) = 0,
+\end{align}
+
+Since the amplification factor $G = c^{t+1}_n / c^{t}_{n} \equiv \exp(\omega \Delta t)$, we have
+\begin{align}
+    G = 1 - \frac{u \Delta t}{h} i \sin(kh),
+\end{align}
+and the magnitude is given by
+\begin{align}
+    \| G \| = \sqrt{G \bar{G}} = \sqrt{1 + \left( \frac{u \Delta t}{h} \sin(kh) \right)^2}.
+\end{align}
+This is clearly greater than one (unless $u = 0$, in which case it is equal to one), so the method is unconditionally unstable.
+
+\section{Problem 5}
+\subsection{Part 1}
+As in the previous homework, we first note that we can use the chain rule in combination with the definitions to nondimensionalize the equations.
 
 % \appendix
 % \section{Programs}
