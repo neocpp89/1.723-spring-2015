@@ -202,11 +202,39 @@ and the magnitude is given by
 \begin{align}
     \| G \| = \sqrt{G \bar{G}} = \sqrt{1 + \left( \frac{u \Delta t}{h} \sin(kh) \right)^2}.
 \end{align}
-This is clearly greater than one (unless $u = 0$, in which case it is equal to one), so the method is unconditionally unstable.
+This is clearly greater than one (unless $u = 0$, in which case it is equal to one and the equation is uninteresting), so the method is unconditionally unstable.
 
 \section{Problem 5}
 \subsection{Part 1}
-As in the previous homework, we first note that we can use the chain rule in combination with the definitions to nondimensionalize the equations.
+The equation we want to nondimensionalize is the linear tracer transport equation, given by
+\begin{align}
+    \phi \frac{\partial c}{\partial t} + \frac{\partial}{\partial x} \left(uc - D \frac{\partial c}{\partial x} \right) = 0.
+\end{align}
+As in the previous homework, we first note that we can use the chain rule in combination with the definitions to nondimensionalize the equation, which leads to
+\begin{align}
+    \phi_c \phi_D \frac{c_c \partial c_D}{T_c \partial t_D} + \frac{\partial}{L \partial x_D} \left(u_c u_D c_c c_D - D_c D_D \frac{c_c \partial c_D}{L \partial x_D} \right) = 0.
+\end{align}
+We can collect the coefficients to obtain
+\begin{align}
+    \phi_D \frac{\partial c_D}{\partial t_D} + \frac{\partial}{\partial x_D} \left(\frac{T_c u_c}{\phi_c L} u_D c_D - D_D \frac{D_c T_c}{\phi_c L^2} \frac{\partial c_D}{\partial x_D} \right) = 0.
+\end{align}
+Setting the coefficient left term inside the brackets to unity allows us to find the characteristic advective time
+\begin{align}
+    T_c = \frac{\phi_c L}{u_c}.
+\end{align}
+
+\subsection{Part 2}
+Going back to the previous equations, we see that the Peclet number is given by
+\begin{align}
+    \mathrm{Pe} = \frac{\phi_c L^2}{T_c D_c},
+\end{align}
+which, using expression for the charcteristic advective time $T_c$, becomes
+\begin{align}
+    \mathrm{Pe} = \frac{u_c L}{D_c}.
+\end{align}
+Since $u_c$ is the advective velocity and $D_c / L$ looks like a velocity due to diffusion, the Peclet number is the ratio of advective and diffusive velocities.
+
+\section{Problem 6}
 
 % \appendix
 % \section{Programs}
