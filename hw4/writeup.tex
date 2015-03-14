@@ -235,6 +235,30 @@ which, using expression for the charcteristic advective time $T_c$, becomes
 Since $u_c$ is the advective velocity and $D_c / L$ looks like a velocity due to diffusion, the Peclet number is the ratio of advective and diffusive velocities.
 
 \section{Problem 6}
+\subsection{Part 1}
+The plots of the anayltical solution given by
+\begin{align}
+    c(x,t) = \frac{1}{2} \mathrm{erfc} \left( \frac{x - t}{2 \sqrt{t / \mathrm{Pe}}} \right)
+\end{align}
+for the linear tracer transport equation are shown in figure \ref{fig:pe-analytical}.
+\begin{figure}
+\centering
+\begin{tabular}{c c}
+    \includegraphics[scale=1.0]{figs/analytic_1.pdf} &
+    \includegraphics[scale=1.0]{figs/analytic_10.pdf} \\
+    \includegraphics[scale=1.0]{figs/analytic_100.pdf} &
+    \\
+\end{tabular}
+\caption{Analytical solution curves for the linear tracer transport equation at different times with varying Peclet numbers. We see that higher Peclet numbers result in a sharper interface. This makes sense with the interpretation given in the previous problem, as the advective velocity is higher than the diffusive velocity with a sharp front.}
+\label{fig:pe-analytical}
+\end{figure}
+
+Due to the diffusion term, it is hard to say exactly when the tracer ``reaches'' the right boundary.
+However, from the form of the analytical solution, it is clear that $c(1,1) = 0.5$ regardless of Peclet number.
+With increasing Peclet number, this appears more and more like a shock, so at extremely high peclet numbers the tracer concentration will go from 0 to 1 just before and just after t=1 respectively.
+At lower Peclect numbers the tracer diffuses more, so the transition is not as dramatic.
+
+\subsection{Part 2}
 
 % \appendix
 % \section{Programs}
