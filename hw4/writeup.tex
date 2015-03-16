@@ -255,10 +255,40 @@ for the linear tracer transport equation are shown in figure \ref{fig:pe-analyti
 
 Due to the diffusion term, it is hard to say exactly when the tracer ``reaches'' the right boundary.
 However, from the form of the analytical solution, it is clear that $c(1,1) = 0.5$ regardless of Peclet number.
-With increasing Peclet number, this appears more and more like a shock, so at extremely high peclet numbers the tracer concentration will go from 0 to 1 just before and just after t=1 respectively.
+With increasing Peclet number, this appears more and more like a shock, so at extremely high Peclet numbers the tracer concentration will go from 0 to 1 just before and just after t=1 respectively.
 At lower Peclect numbers the tracer diffuses more, so the transition is not as dramatic.
 
 \subsection{Part 2}
+The equation we want to discretize is given by
+\begin{align}
+    \frac{\partial c}{\partial t} + \frac{\partial}{\partial x} \left(c - \frac{1}{\mathrm{Pe}} \frac{\partial c}{\partial x} \right) = 0.
+\end{align}
+Following the finite volume approach, we break the system up into cells and integrate assuming piecewise constant properties over each cell, yielding for cell $n$
+\begin{align}
+    \frac{\partial c}{\partial t} h  + \left( c - \frac{1}{\mathrm{Pe}} \frac{\partial c}{\partial x} \right)\biggr\rvert^{n+1/2}_{n-1/2}  = 0.
+\end{align}
+Since we are using the trapezoidal rule in time, we rearrange and discretize the temporal derivative as
+\begin{align}
+c^{t+1}_{n} - c^{t}_{n} = \frac{-\Delta t}{h}\left( \theta \left(c - \frac{1}{\mathrm{Pe}} \frac{\partial c}{\partial x} \right)^{t+1}\biggr\rvert^{n+1/2}_{n-1/2} + (1 - \theta) \left(c - \frac{1}{\mathrm{Pe}} \frac{\partial c}{\partial x} \right)^{t}\biggr\rvert^{n+1/2}_{n-1/2} \right).
+\label{eqn:with-flux}
+\end{align}
+Using the two point flux approximation for the diffusive term and upwinding for the convective part, we arrive at
+\begin{align}
+c^{t+1}_{n} - c^{t}_{n} = \frac{-\Delta t}{h}\left( \theta \left(c^{t+1}_n - c^{t+1}_{n-1} - \frac{1}{\mathrm{Pe}} \frac{c^{t+1}_{n+1} - 2c^{t+1}_{n} + c^{t+1}_{n-1}}{h} \right) + (1 - \theta) \left(c^t_{n} - c^{t}_{n-1} - \frac{1}{\mathrm{Pe}} \frac{c^{t}_{n+1} - 2c^{t}_{n} + c^{t}_{n-1}}{h} \right) \right)
+\end{align}
+as the discretization for the interior points.
+
+For the boundary conditions, we see that both of them are setting the flux into and out of the first and last cells.
+We can substitute these fluxes directly into equation \eqref{eqn:with-flux}.
+This yields
+\begin{align}
+c^{t+1}_{1} - c^{t}_{1} = \frac{-\Delta t}{h}\left( \theta \left(c^{t+1}_{1} - \frac{1}{\mathrm{Pe}} \frac{c^{t+1}_{2} - c^{t+1}_{1}}{h} - 1 \right) + (1 - \theta) \left( c^{t}_{1} - \frac{1}{\mathrm{Pe}} \frac{c^{t}_{2} - c^{t}_{1}}{h} - 1 \right) \right)
+\end{align}
+for the leftmost point (index 1)  and
+\begin{align}
+c^{t+1}_{N} - c^{t}_{N} = \frac{-\Delta t}{h}\left( \theta \left(c^{t+1}_{N} - c^{t+1}_{N-1} - \frac{1}{\mathrm{Pe}} \frac{c^{t+1}_{N-1} - c^{t+1}_{N}}{h} \right) + (1 - \theta) \left( c^{t}_{N} - c^{t}_{N-1} - \frac{1}{\mathrm{Pe}} \frac{c^{t}_{N-1} - c^{t}_{N}}{h} \right) \right)
+\end{align}
+for the rightmost point (index N).
 
 % \appendix
 % \section{Programs}

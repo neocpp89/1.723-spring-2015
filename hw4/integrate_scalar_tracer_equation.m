@@ -1,7 +1,15 @@
 function [ xm, cm, ta ] = integrate_scalar_tracer_equation( N, Pe, theta, dt, tout )
 %INTEGRATE_SCALAR_TRACER_EQUATION Solves 1D linear scalar transport
 %equation using finite volumes.
-%   Detailed explanation goes here
+%  N - number of grid cells
+%  Pe - Peclet number
+%  theta - trapezoidal integration parameter (0 = forward euler, 1 = backward euler) 
+%  dt - time step size
+%  tout - list of times to save solution vector
+% 
+%  Returns N x (# times) matrix xm containing cell point locations,
+%          N x (# times) matrix cm containing cell solutions at different times,
+%          1 x (# times) matrix ta containing actual times data is saved at.
 
 h = 1.0 / N;
 x = linspace(0+h/2.0, 1-h/2.0, N);
@@ -10,6 +18,8 @@ e = ones(N, 1);
 z = zeros(N, 1);
 alpha = (1.0/ (Pe * h));
 diags = (dt / h) * ([-e e z] - alpha * [e -2*e e]);
+
+tout = sort(tout)
 
 % initial condition
 c = zeros(N, 1);
