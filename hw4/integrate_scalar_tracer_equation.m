@@ -19,7 +19,7 @@ z = zeros(N, 1);
 alpha = (1.0/ (Pe * h));
 diags = (dt / h) * ([-e e z] - alpha * [e -2*e e]);
 
-tout = sort(tout)
+tout = sort(tout);
 
 % initial condition
 c = zeros(N, 1);
@@ -50,9 +50,9 @@ while i <= numel(tout)
     else
         c = LA \ (RA*c + c_tilde);
     end
-    plot(x,c);
-    ylim([0, max(1,max(c))]);
-    drawnow;
+    % plot(x,c);
+    % ylim([0, max(1,max(c))]);
+    % drawnow;
     t = t + dt;
     if (t >= tout(i))
         ta(i) = t;

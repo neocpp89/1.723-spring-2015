@@ -290,6 +290,75 @@ c^{t+1}_{N} - c^{t}_{N} = \frac{-\Delta t}{h}\left( \theta \left(c^{t+1}_{N} - c
 \end{align}
 for the rightmost point (index N).
 
+For shorthand in the next section, we define $\alpha = \frac{1}{h \mathrm{Pe}}$ and $\beta = \frac{\Delta t}{h}$.
+For the case $N=4$, we define 3 column vectors
+\begin{align}
+    \begin{bmatrix}\mathbf{D}_{-1}  & \mathbf{D}_{0} & \mathbf{D}_{1} \end{bmatrix} =
+    \begin{bmatrix}
+        0 & \beta (1 + \alpha) & - \beta \alpha \\
+        -\beta (1 + \alpha) & \beta (1 + 2 \alpha) & - \beta \alpha \\
+        -\beta (1 + \alpha) & \beta (1 + 2 \alpha) & - \beta \alpha \\
+        -\beta (1 + \alpha) & \beta (1 + \alpha) & 0
+    \end{bmatrix}
+\end{align}
+which become the subdiagonal, diagonal, and superdiagonal of a matrix $\mathbf{A}$ respectively (neither the first element of $\mathbf{D}_{-1}$ is used, nor is the last element of $\mathbf{D}_{1}$).
+The initial condition is $\mathbf{c}^0 = \mathbf{0}$, and the load vector due to boundary conditions is
+\begin{align}
+    \mathbf{\tilde{c}} =
+    \begin{bmatrix}
+        \beta \\
+        0 \\
+        0 \\
+        0 
+    \end{bmatrix}.
+\end{align}
+
+The total system to advance from time $t$ to $t+1$ is then written as
+\begin{align}
+    (\mathbf{I} + \theta \mathbf{A}) \mathbf{c}^{t+1} = (\mathbf{I} - (1-\theta) \mathbf{A}) \mathbf{c}^{t} + \mathbf{\tilde{c}}
+\end{align}
+where $\mathbf{I}$ is the 4x4 identity matrix.
+
+\subsection{Part 3}
+The main function which does the integration is listed as program \ref{code:integ},
+while the driver to produce the plots is given in \ref{code:plots}.
+\lstinputlisting[label=code:integ]{integrate_scalar_tracer_equation.m}
+\lstinputlisting[label=code:plots]{plot_numeric.m}
+
+\subsection{Part 4}
+The results for the smaller timestep are plotted in figure \ref{fig:small-dt}, while the larger timestep results are shown in figure \ref{fig:large-dt}.
+Something seems wrong for the low Peclet number case; it appears the added diffusion makes the explicit scheme unstable (which seems odd), and in the implicit case it seems the solution is not converging to the expected answer. I'm not sure if this is due to the outflow boundary not capturing the correct condition or if this is a bug in my implementation.
+
+\begin{figure}
+\centering
+\begin{tabular}{c c}
+    \includegraphics[scale=0.8]{figs/numeric_1_1_0.pdf} &
+    \includegraphics[scale=0.8]{figs/numeric_1_1_1.pdf} \\
+    \includegraphics[scale=0.8]{figs/numeric_10_1_0.pdf} &
+    \includegraphics[scale=0.8]{figs/numeric_10_1_1.pdf} \\
+    \includegraphics[scale=0.8]{figs/numeric_100_1_0.pdf} &
+    \includegraphics[scale=0.8]{figs/numeric_100_1_1.pdf}
+\end{tabular}
+\label{fig:small-dt}
+\caption{Implicit (left) and explicit (right) updates of the scalar tracer transport equation. We see that the solution does not look very good at low Peclet numbers (and is not even stable in the explicit case except for high Peclet number).}
+\end{figure}
+
+\subsection{Part 5}
+When the timestep becomes larger, the explciit scheme is unstable for the entire range of Peclet numbers, but not much changes for implicit.
+\begin{figure}
+\centering
+\begin{tabular}{c c}
+    \includegraphics[scale=0.8]{figs/numeric_1_10_0.pdf} &
+    \includegraphics[scale=0.8]{figs/numeric_1_10_1.pdf} \\
+    \includegraphics[scale=0.8]{figs/numeric_10_10_0.pdf} &
+    \includegraphics[scale=0.8]{figs/numeric_10_10_1.pdf} \\
+    \includegraphics[scale=0.8]{figs/numeric_100_10_0.pdf} &
+    \includegraphics[scale=0.8]{figs/numeric_100_10_1.pdf}
+\end{tabular}
+\label{fig:large-dt}
+\caption{Implicit (left) and explicit (right) updates of the scalar tracer transport equation. We see that the solution does not look very good at low Peclet numbers (and is not even stable in the explicit case). As before, explicit takes less time to compute but seems much less stable.}
+\end{figure}
+
 % \appendix
 % \section{Programs}
 % \lstinputlisting[label=code:plotting]{sandstone_figures.py}
