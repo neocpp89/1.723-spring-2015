@@ -1,4 +1,4 @@
-function [ XYm, Cm, ta, p ] = integrate_scalar_tracer_equation_2d( Nx, Ny, var_lnk, Pe, theta, dt, tout )
+function [ Cm, ta, p ] = integrate_scalar_tracer_equation_2d( Nx, Ny, var_lnk, Pe, theta, dt, tf )
 %INTEGRATE_SCALAR_TRACER_EQUATION_2D Solves 2D linear scalar transport equation
 %using finite volumes.
 %  Nx - number of grid cells in x
@@ -6,10 +6,10 @@ function [ XYm, Cm, ta, p ] = integrate_scalar_tracer_equation_2d( Nx, Ny, var_l
 %  Pe - Peclet number
 %  theta - trapezoidal integration parameter (0 = forward euler, 1 = backward euler) 
 %  dt - time step size
-%  tout - list of times to save solution vector
+%  tf - max time
 % 
 %  Returns Nx x Ny x (# times) matrix xm containing cell point locations,
-%          Nx x Ny x (# times) matrix cm containing cell solutions at different times,
+%          Nx x Ny x (# times) matrix cm containing cell concentrations at different times,
 %          1 x (# times) matrix ta containing actual times data is saved at.
 %          Nx x Ny matrix containing pressure field.
 
@@ -60,21 +60,36 @@ bv = reshape(b, [], 1);
 pv = A \ bv;
 p = reshape(pv, Nx, Ny);
 
+% show plots and save pressure
 figure; surf(X,Y,log(perm),'edgecolor','none'); view([0, 0, 1]);
 figure; surf(X,Y,p,'edgecolor','none'); view([0, 0, 1]);
-figure; plot(diag(p) - p(end/2,end/2));
+h = figure; plot(x, diag(p) - p(end/2,end/2));
+set(h, 'units', 'inches', 'position', [1 1 3 3])
+set(h, 'PaperUnits','centimeters');
+set(h, 'Units','centimeters');
+pos=get(h,'Position');
+set(h, 'PaperSize', [pos(3) pos(4)]);
+set(h, 'PaperPositionMode', 'manual');
+set(h, 'PaperPosition',[0 0 pos(3) pos(4)]);
+fname = sprintf('figs/pressure_%d_%d.png', 10*var_lnk, Nx);
+title(sprintf('Pressure along diagonal\n(N = %d)', Nx));
+xlabel('Coordinate');
+ylabel('Pressure');
+print(fname, '-dpng');
 
-ux = lambda_bar_x(2:end-1, :).*(p(1:end-1, :) - p(2:end, :));
-uy = lambda_bar_y(:, 2:end-1).*(p(:, 1:end-1) - p(:, 2:end));
-zx = zeros(1, size(ux, 2));
-zy = zeros(size(uy, 1), 1);
-ux = [zx; ux; zx];
-uy = [zy, uy, zy];
+% calculate integrated velocities
+ux_int = lambda_bar_x(2:end-1, :).*(p(1:end-1, :) - p(2:end, :));
+uy_int = lambda_bar_y(:, 2:end-1).*(p(:, 1:end-1) - p(:, 2:end));
+zx = zeros(1, size(ux_int, 2));
+zy = zeros(size(uy_int, 1), 1);
+ux = [zx; ux_int; zx];
+uy = [zy, uy_int, zy];
 ux(1,1) = 1/2;
 uy(1,1) = 1/2;
 ux(end,end) = 1/2;
 uy(end,end) = 1/2;
 
+% draw appoximate velocities on perm field
 scale = 0.1;
 figure; h = surf(X,Y,zeros(size(X)), log(perm),'edgecolor','none'); view([0, 0, 1]);
 axis equal square;
@@ -82,52 +97,47 @@ hold on;
 quiver(X,Y,scale*(ux(1:end-1,:)+ux(2:end, :))/2, scale*(uy(:, 1:end-1) + uy(:, 2:end))/2, 'Autoscale','off', 'color', [0,0,0]);
 hold off;
 
-e = ones(N, 1);
-z = zeros(N, 1);
-alpha = (1.0/ (Pe * h));
-diags = (dt / h) * ([-e e z] - alpha * [e -2*e e]);
-
-tout = sort(tout);
-
-% initial condition
-c = zeros(N, 1);
-
-c_tilde = zeros(N, 1);
-
-% left BC
-diags(1, :) = (dt / h) * [0 (1+alpha) -alpha];
-c_tilde(1) = dt/h * (1);
-
-% right BC
-diags(end, :) = (dt / h) * [-(1+alpha) (1+alpha) 0];
-
-A = spdiags(diags, [1;0;-1], N, N)';
-I = speye(N, N);
-
-LA = I+A*theta;
-RA = I-A*(1.0-theta);
-
-xm = kron(ones(numel(tout), 1), x)';
-cm = zeros(N, numel(tout));
 t = 0;
 i = 1;
-ta = zeros(numel(tout), 1);
-while i <= numel(tout)
-    if (theta == 0)
-        c = RA*c + c_tilde;
-    else
-        c = LA \ (RA*c + c_tilde);
-    end
-    % plot(x,c);
-    % ylim([0, max(1,max(c))]);
-    % drawnow;
+c = zeros(Nx, Ny);
+while (t < tf)
     t = t + dt;
-    if (t >= tout(i))
-        ta(i) = t;
-        cm(:, i) = c;
-        i = i + 1;
-    end
-end
+    ta(i) = t;
+    Cm(:,:, i) = c;
+    c(1,1) = 1;
 
+    Fx_adv = ux_int.*(ux_int > 0).*c(1:end-1, :) + ux_int.*(ux_int < 0).*c(2:end, :);
+    zFx = zeros(1, size(Fx_adv, 2));
+    Fx_adv = [zFx; Fx_adv; zFx];
+
+    Fy_adv = uy_int.*(uy_int > 0).*c(:, 1:end-1) + uy_int.*(uy_int < 0).*c(:, 2:end);
+    zFy = zeros(size(Fy_adv, 1), 1);
+    Fy_adv = [zFy, Fy_adv, zFy];
+
+    Fx_diff = (1 / Pe) * (hy / hx) * (c(1:end-1, :) - c(2:end, :));
+    Fx_diff = [zFx; Fx_diff; zFx];
+
+    Fy_diff = (1 / Pe) * (hx / hy) * (c(:, 1:end-1) - c(:, 2:end));
+    Fy_diff = [zFy, Fy_diff, zFy];
+
+    Fx = Fx_adv + Fx_diff;
+    Fy = Fy_adv + Fy_diff;
+
+    Fx(1,1) = 1/2;
+    Fy(1,1) = 1/2;
+    Fx(end,end) = c(end,end)*1/2;
+    Fy(end,end) = c(end,end)*1/2;
+
+    dc = (dt / (hx * hy)) * (Fx(1:end-1,:) - Fx(2:end, :) + Fy(:, 1:end-1) - Fy(:, 2:end));
+    c = c + dc;
+
+    % plot concentration
+    % surf(X,Y,c, 'edgecolor', 'none');
+    % view([0 0 1]);
+    % colormap(hot);
+    % drawnow;
+
+    i = i + 1;
+end
 
 end
