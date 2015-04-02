@@ -163,6 +163,25 @@ Increasing the correlation length in these next images makes larger blocks of si
 \caption{Here the variance in log of k is constant at 2. The correlation lengths are equal to each other, but vary from $2dx$, to $5 dx$, to $20dx$ from left to right (again $dx = 1/200$).}
 \end{table}
 
+\subsection{Part 3}
+The code is provided in the zip file, but the main integration routine is reproduced below.
+\lstinputlisting[label=code:integration]{integrate_scalar_tracer_equation_2d.m}
+
+\subsection{Part 4}
+We plot the pressure along the diagonal over multiple grid spacings.
+For low variance (0.1), we see that the solution looks like that for a point source and a point sink, as expected.
+When the variance is larger though we see a lot of inhomogeneity both within the solution and also between solutions (the curves don't look like they will converge to anything, although I'm sure there is a `distribution average'). The pressures themselves seem to be higher with increasing range in permeabilities.
+\begin{table}[!h]
+\centering
+\begin{tabular}{c c c}
+\includegraphics[scale=0.75]{figs/pressure_1.png} &
+\includegraphics[scale=0.75]{figs/pressure_20.png} &
+\includegraphics[scale=0.75]{figs/pressure_50.png}
+\end{tabular}
+\caption{The pressure along the diagonal is plotted for multiple grid spacings for various variances in log permeability (0.1, 2, and 5 from left to right).}
+\end{table}
+
+
 
 % \appendix
 % \section{Programs}

@@ -1,10 +1,9 @@
-function [ Cm, ta, p ] = integrate_scalar_tracer_equation_2d( Nx, Ny, var_lnk, Pe, theta, dt, tf )
+function [ Cm, ta, p ] = integrate_scalar_tracer_equation_2d( Nx, Ny, var_lnk, Pe, dt, tf )
 %INTEGRATE_SCALAR_TRACER_EQUATION_2D Solves 2D linear scalar transport equation
 %using finite volumes.
 %  Nx - number of grid cells in x
 %  Ny - number of grid cells in x
 %  Pe - Peclet number
-%  theta - trapezoidal integration parameter (0 = forward euler, 1 = backward euler) 
 %  dt - time step size
 %  tf - max time
 % 
@@ -61,21 +60,21 @@ pv = A \ bv;
 p = reshape(pv, Nx, Ny);
 
 % show plots and save pressure
-figure; surf(X,Y,log(perm),'edgecolor','none'); view([0, 0, 1]);
-figure; surf(X,Y,p,'edgecolor','none'); view([0, 0, 1]);
-h = figure; plot(x, diag(p) - p(end/2,end/2));
-set(h, 'units', 'inches', 'position', [1 1 3 3])
-set(h, 'PaperUnits','centimeters');
-set(h, 'Units','centimeters');
-pos=get(h,'Position');
-set(h, 'PaperSize', [pos(3) pos(4)]);
-set(h, 'PaperPositionMode', 'manual');
-set(h, 'PaperPosition',[0 0 pos(3) pos(4)]);
-fname = sprintf('figs/pressure_%d_%d.png', 10*var_lnk, Nx);
-title(sprintf('Pressure along diagonal\n(N = %d)', Nx));
-xlabel('Coordinate');
-ylabel('Pressure');
-print(fname, '-dpng');
+% figure; surf(X,Y,log(perm),'edgecolor','none'); view([0, 0, 1]);
+% figure; surf(X,Y,p,'edgecolor','none'); view([0, 0, 1]);
+% h = figure; plot(x, diag(p) - p(end/2,end/2));
+% set(h, 'units', 'inches', 'position', [1 1 3 3])
+% set(h, 'PaperUnits','centimeters');
+% set(h, 'Units','centimeters');
+% pos=get(h,'Position');
+% set(h, 'PaperSize', [pos(3) pos(4)]);
+% set(h, 'PaperPositionMode', 'manual');
+% set(h, 'PaperPosition',[0 0 pos(3) pos(4)]);
+% fname = sprintf('figs/pressure_%d_%d.png', 10*var_lnk, Nx);
+% title(sprintf('Pressure along diagonal\n(N = %d)', Nx));
+% xlabel('Coordinate');
+% ylabel('Pressure');
+% print(fname, '-dpng');
 
 % calculate integrated velocities
 ux_int = lambda_bar_x(2:end-1, :).*(p(1:end-1, :) - p(2:end, :));
@@ -90,12 +89,12 @@ ux(end,end) = 1/2;
 uy(end,end) = 1/2;
 
 % draw appoximate velocities on perm field
-scale = 0.1;
-figure; h = surf(X,Y,zeros(size(X)), log(perm),'edgecolor','none'); view([0, 0, 1]);
-axis equal square;
-hold on;
-quiver(X,Y,scale*(ux(1:end-1,:)+ux(2:end, :))/2, scale*(uy(:, 1:end-1) + uy(:, 2:end))/2, 'Autoscale','off', 'color', [0,0,0]);
-hold off;
+% scale = 0.1;
+% figure; h = surf(X,Y,zeros(size(X)), log(perm),'edgecolor','none'); view([0, 0, 1]);
+% axis equal square;
+% hold on;
+% quiver(X,Y,scale*(ux(1:end-1,:)+ux(2:end, :))/2, scale*(uy(:, 1:end-1) + uy(:, 2:end))/2, 'Autoscale','off', 'color', [0,0,0]);
+% hold off;
 
 t = 0;
 i = 1;
