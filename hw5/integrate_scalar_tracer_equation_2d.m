@@ -1,4 +1,4 @@
-function [ Cm, ta, p ] = integrate_scalar_tracer_equation_2d( Nx, Ny, var_lnk, Pe, dt, tf )
+function [ cm, ta, p ] = integrate_scalar_tracer_equation_2d( Nx, Ny, var_lnk, Pe, dt, tf )
 %INTEGRATE_SCALAR_TRACER_EQUATION_2D Solves 2D linear scalar transport equation
 %using finite volumes.
 %  Nx - number of grid cells in x
@@ -8,7 +8,7 @@ function [ Cm, ta, p ] = integrate_scalar_tracer_equation_2d( Nx, Ny, var_lnk, P
 %  tf - max time
 % 
 %  Returns Nx x Ny x (# times) matrix xm containing cell point locations,
-%          Nx x Ny x (# times) matrix cm containing cell concentrations at different times,
+%          1 x (# times) matrix cm containing top right cell concentrations at different times,
 %          1 x (# times) matrix ta containing actual times data is saved at.
 %          Nx x Ny matrix containing pressure field.
 
@@ -102,7 +102,7 @@ c = zeros(Nx, Ny);
 while (t < tf)
     t = t + dt;
     ta(i) = t;
-    Cm(:,:, i) = c;
+    cm(i) = c(end,end);
     c(1,1) = 1;
 
     Fx_adv = ux_int.*(ux_int > 0).*c(1:end-1, :) + ux_int.*(ux_int < 0).*c(2:end, :);

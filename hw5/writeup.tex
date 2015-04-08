@@ -139,6 +139,24 @@ We can achieve this by setting the transmissibilites to zero and adding into the
     b_1 = Q.
 \end{align}
 
+For the tracer tranport we have
+\begin{align}
+\frac{\partial c}{\partial t} + \nabla \cdot (\mathbf{u}c - \frac{1}{\mathrm{Pe}} \nabla c) = 0
+\end{align}
+
+Using the solution from the pressure equation, we can obtain the velocity via
+\begin{align}
+    u^x_{i+1/2, j} &= T^x_{i+1/2,j}*(p_{i,j} - p_{i+1,j}) \\
+    u^x_{i-1/2, j} &= T^x_{i-1/2,j}*(p_{i,j} - p_{i-1,j}) \\
+    u^y_{i, j+1/2} &= T^y_{i,j+1/2}*(p_{i,j} - p_{i,j+1}) \\
+    u^y_{i, j-1/2} &= T^y_{i,j-1/2}*(p_{i,j} - p_{i,j-1})
+\end{align}
+
+For upwinding, we look at the signs of $u_x$ and $u_y$.
+If the sign of $u_x$ is positive, we take $F^x_{i+1/2,j}$ as $u^x_{i+1/2,j}c_{i,j}$, otherwise we use $u^x_{i+1/2,j}c_{i+1,j}$, and similarly for the y component.
+For the diffusive flux, we use the two point flux approximation, meaning we take
+$F^x_{i+1/2,j} = \frac{1}{\mathrm{Pe}} (c_{i,j} - c_{i+1,j}) \frac{\delta y}{\delta x}$, and similarly for the y component.
+
 \subsection{Part 2}
 Here we show three different permeability fields generated using the same parameters as we are to use for the rest of the problem.
 They look mostly the same, but the scale is different.
@@ -181,7 +199,22 @@ When the variance is larger though we see a lot of inhomogeneity both within the
 \caption{The pressure along the diagonal is plotted for multiple grid spacings for various variances in log permeability (0.1, 2, and 5 from left to right).}
 \end{table}
 
-
+\subsection{Part 5}
+Although I tried to use $N = 200$, the timestep restrictions were too severe for my patience (my code my be especially inefficient, I'm not sure).
+The following graphs are done at $N=40$ instead.
+\begin{table}[!h]
+\centering
+\begin{tabular}{c c c}
+\includegraphics[scale=0.75]{figs/breakthrough_1.png} &
+\includegraphics[scale=0.75]{figs/breakthrough_20.png} &
+\includegraphics[scale=0.75]{figs/breakthrough_50.png}
+\end{tabular}
+\caption{The breakthrough curves at varying Peclet number for various variances in log permeability (0.1, 2, and 5 from left to right).}
+\end{table}
+We note that first of all, there is significant variation in the curves for larger variation in permeability, which is expected.
+We also notice that, in general, with larger variation in permeability, the initial time to nonzero concentration is lessened, but the time to saturation is also increased.
+A larger Peclet number appears to ``sharpen'' the curve in the low variance case, which makes sense since it means means diffusion is less siginificant to the tracer motion compared to advection.
+I can't see a general trend with Peclet number in the larger variance cases though, which is surprising to me.
 
 % \appendix
 % \section{Programs}
