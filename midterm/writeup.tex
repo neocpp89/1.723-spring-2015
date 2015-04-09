@@ -1,0 +1,94 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\scriptsize\ttfamily,    % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=shadowbox,                    % adds a frame around the code
+%  framexleftmarign=5mm,
+  xleftmargin=10pt,
+  xrightmargin=10pt,
+  rulesepcolor=\color{gray},
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  morekeywords={*,...,fit,predint,export\_fig},            % if you want to add more keywords to the set
+%  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbers=none,
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=4,                       % sets default tabsize to 4 spaces
+  caption=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+
+\title{1.723 Midterm}
+\author{Sachith  Dunatunga}
+
+\begin{document}
+\maketitle
+
+\section{Problem 1}
+For the boundary conditions, we will start with the equation
+\begin{align}
+ \nabla \cdot \mathbf{u} = 0
+\end{align}
+and derive the finite volume method from there.
+Taking an integral and using the divergence theorem, we can write
+\begin{align}
+\int_\Omega \nabla \cdot \mathbf{u}\ \mathrm{dV} &= 0 \\
+\int_{\Gamma_{L}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} +
+\int_{\Gamma_{D}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} +
+\int_{\Gamma_{R}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} +
+\int_{\Gamma_{U}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} &= 0.
+\end{align}
+For each of the boundaries, we simply set the corresponding integrated flux to zero.
+We will derive the equation for the bottom boundary; the others are similar.
+
+Since the flux through the bottom boundary is zero, the equation above is reduced to
+\begin{align}
+\int_{\Gamma_{L}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} +
+\int_{\Gamma_{R}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} +
+\int_{\Gamma_{U}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} &= 0.
+\end{align}
+
+The nondimensionalized darcy velocity is given by
+\begin{align}
+\mathbf{u} = - (\nabla p - c \nabla z).
+\end{align}
+
+Using the two point flux approximation, we can write the boundary integrals as
+\begin{align}
+\int_{\Gamma_{L}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} &= - \frac{\delta z}{\delta x} (p_{i,j-1} - p_{i,j}) \\
+\int_{\Gamma_{R}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} &= \frac{\delta z}{\delta x} (p_{i,j} - p_{i,j+1}) \\
+\int_{\Gamma_{U}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} &= - \frac{\delta x}{\delta z} \left( (p_{i-1,j} - p_{i,j}) - \delta z c_{i-1/2,j} \right).
+\end{align}
+
+\section{Problem 2}
+
+% \appendix
+% \section{Programs}
+% \lstinputlisting[label=code:plotting]{sandstone_figures.py}
+
+\end{document}
