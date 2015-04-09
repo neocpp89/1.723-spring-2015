@@ -6,6 +6,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{cleveref}
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
@@ -85,10 +86,80 @@ Using the two point flux approximation, we can write the boundary integrals as
 \int_{\Gamma_{U}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} &= - \frac{\delta x}{\delta z} \left( (p_{i-1,j} - p_{i,j}) - \delta z c_{i-1/2,j} \right).
 \end{align}
 
+For the interior problems, we simply add the integral for the bottom boundary given by
+\begin{align}
+\int_{\Gamma_{D}} \mathbf{u} \cdot \mathbf{n}\ \mathrm{dS} &= \frac{\delta x}{\delta z} \left( (p_{i,j} - p_{i+1,j}) - \delta z c_{i+1/2,j} \right).
+\end{align}
+
+For the transport equations, we use the upwinding scheme for the advective term as done before in homework.
+Similarly, the diffusive term is given by a two point flux approximation as before (though Rayleigh number replaces Peclet number).
+At the boundaries, we are given that $\frac{\partial c}{\partial n} = 0$ except the top, which is given a constant value of $c = 1$ (plus a perturbation).
+Since the velocities at the boundaries are constrained to be zero, the only nonzero term is the diffusive part in the top boundary, and is given by
+\begin{align}
+F_{1/2, j} = \frac{1}{\mathrm{Ra}} \frac{\delta x} {\delta z} \left( 2 \bar{c}_{j} - 2 c_{1, j} \right).
+\end{align}
+
+The code which implements these equations is attached, but is reproduced in \cref{code:integrate} for convenience.
+
 \section{Problem 2}
+The concentration, pressure, and velocity fields are shown in figures \ref{fig:Ra1}, \ref{fig:Ra2}, and \ref{fig:Ra4} for various Rayleigh numbers. A grid size of 128x128 was used.
+Although the dynamics are qualitatively as expected (diffusive phase, then advective phase where fingers form and combine, then a saturated phase), I am a bit surprised by the timescale (it takes much longer than I expected in nondimensional time).
+There may be an error in the scaling of the integrated fluxes, but I was not able to determine the problem.
+
+\subsection{Part 1}
+\begin{figure}[!h]
+\centering
+\begin{tabular}{c}
+\includegraphics[scale=0.35]{figs/Ra_1000_1000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_1000_4000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_1000_10000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_1000_15000.png} \\
+\end{tabular}
+\caption{The system state is shown at various times. These are done at $\mathrm{Ra} = 1000$.}
+\label{fig:Ra1}
+
+\end{figure}
+\begin{figure}[!h]
+\centering
+\begin{tabular}{c}
+\includegraphics[scale=0.35]{figs/Ra_2000_1000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_2000_4000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_2000_10000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_2000_15000.png} \\
+\end{tabular}
+\caption{The system state is shown at various times. These are done at $\mathrm{Ra} = 2000$.}
+\label{fig:Ra2}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\begin{tabular}{c}
+\includegraphics[scale=0.35]{figs/Ra_4000_1000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_4000_4000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_4000_10000.png} \\
+\includegraphics[scale=0.35]{figs/Ra_4000_15000.png} \\
+\end{tabular}
+\caption{The system state is shown at various times. These are done at $\mathrm{Ra} = 4000$.}
+\label{fig:Ra4}
+\end{figure}
+
+\clearpage
+
+\subsection{Part 2}
+\begin{figure}[!h]
+\centering
+\begin{tabular}{c}
+\includegraphics[scale=0.35]{figs/Ra_1000_cbar.png} \\
+\includegraphics[scale=0.35]{figs/Ra_2000_cbar.png} \\
+\includegraphics[scale=0.35]{figs/Ra_4000_cbar.png} \\
+\end{tabular}
+\caption{The horizontally-averaged concentrations at the same times as before (t = 1,4,10,15) for Ra = $1000, 2000$ and $4000$ from top to bottom.}
+\end{figure}
+
+
 
 % \appendix
-% \section{Programs}
-% \lstinputlisting[label=code:plotting]{sandstone_figures.py}
+\section{Programs}
+\lstinputlisting[label=code:integrate]{integrate_density.m}
 
 \end{document}
