@@ -50,6 +50,8 @@
 \begin{document}
 \maketitle
 
+I am sorry about the small size of the images, I got stuck on one part of solving the equation and I did not have enough time to prettify the report. The higher quality, full size images are in the zip archive with the code.
+
 \section{Problem 1}
 For the boundary conditions, we will start with the equation
 \begin{align}
@@ -107,6 +109,13 @@ Although the dynamics are qualitatively as expected (diffusive phase, then advec
 There may be an error in the scaling of the integrated fluxes, but I was not able to determine the problem.
 
 \subsection{Part 1}
+We plot the results of the density-driven flow for various Rayleigh number.
+One of the first things we notice is that the number and variety of fingers seems to be affected by Rayleigh number.
+For instance, when Ra = $1000$, the fingers at t=4 seem to be relatively straight and uniformly distributed.
+At Ra = 2000, they seem to curve more and are less uniform, and there appear to be a few more, and by Ra = 4000 the fingers are very different from each other.
+The fingers remain distinct for longer at higher Rayleigh number as well.
+This makes sense, since when Rayleigh number is high it means diffusion is less important than advection, so instabilities can hold their shapes for longer.
+
 \begin{figure}[!h]
 \centering
 \begin{tabular}{c}
@@ -146,6 +155,12 @@ There may be an error in the scaling of the integrated fluxes, but I was not abl
 \clearpage
 
 \subsection{Part 2}
+We clearly see that in the beginning, a diffusive boundary layer forms.
+Surprisingly, it seems some sort of boundary layer persists throughout the simulation.
+However, we also see advection become dominant at later times, resulting in 'steps' where concentration plateaus and quickly decreases.
+I think this is characteristic of moving fronts.
+After the fingers hit the bottom of the boundary, aside from the boundary layer the horizontally averaged concentration becomes much more homogeneous.
+If we look at the simulation. there appears to be more mixing at this stage (whole system vortices form).
 \begin{figure}[!h]
 \centering
 \begin{tabular}{c}
@@ -156,10 +171,30 @@ There may be an error in the scaling of the integrated fluxes, but I was not abl
 \caption{The horizontally-averaged concentrations at the same times as before (t = 1,4,10,15) for Ra = $1000, 2000$ and $4000$ from top to bottom.}
 \end{figure}
 
+\clearpage
+
+\subsection{Part 3}
+The total concentrations as a function of time are plotted next.
+While it is a bit difficult to distinguish the regimes with the higher Rayleigh number, there appears to be a difference between the advective and diffusive phases of the flow.
+It is more difficult to determine when the saturated phase occurs, although it looks like the rate of increase in total concentration returns to a lower slope after the mixing phase.
+Looking at just the total concentration plots, it seems that the Rayleigh number affects the time before the advective phase (with fingers forming and merging) begins.
+This may just be an issue in my code, as the nondimensionalized times seem too large.
+
+I would guess it is possible to predict the transition times depending on the density contrast, since one could do an analysis of bouyant forces and see when it becomes unstable.
+\begin{figure}[!h]
+\centering
+\begin{tabular}{c}
+\includegraphics[scale=0.35]{figs/Ra_1000_ctot.png} \\
+\includegraphics[scale=0.35]{figs/Ra_2000_ctot.png} \\
+\includegraphics[scale=0.35]{figs/Ra_4000_ctot.png} \\
+\end{tabular}
+\caption{The total concentrations at the same times as before (t = 1,4,10,15) for Ra = $1000, 2000$ and $4000$ from top to bottom.}
+\end{figure}
 
 
 % \appendix
 \section{Programs}
 \lstinputlisting[label=code:integrate]{integrate_density.m}
+\lstinputlisting[label=code:drive]{drive.m}
 
 \end{document}
