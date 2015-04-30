@@ -148,6 +148,59 @@ This is because the derivative is not continuous, which can be seen from the ana
 \end{figure}
 \end{enumerate}
 
+\section{Problem 3}
+\begin{enumerate}
+\item
+We want to find the third order polynomial which goes through $u_1$ at $x_1$, $u_2$ at $x_2$, $u_3$ at $x_3$ and $u_4$ at $x_4$.
+Since we can express the third order polynomial as $p(x) = ax^3 + bx^2 + cx + d$, we simply need to solve a matrix equation $\mathbf{A} \mathbf{c} = \mathbf{u}$.
+Here, $\mathbf{A}$ is a Vandermonde matrix given by
+\begin{align}
+    \mathbf{A} = \begin{bmatrix}
+x^3_1 & x^2_1 & x_1 & 1 \\
+x^3_2 & x^2_2 & x_2 & 1 \\
+x^3_3 & x^2_3 & x_3 & 1 \\
+x^3_4 & x^2_4 & x_4 & 1 \\
+\end{bmatrix}
+\end{align}
+if $\mathbf{c} = [a, b, c, d]$ and $\mathbf{u} = [u_1, u_2, u_3, u_4]$.
+After solving for $\mathbf{c}$, can calulate the second derivative simply as $p''(x) = 6ax + 2b$.
+
+\emph{I am sorry, I have run out of time and did not complete the rest of this part of the problem. I did finish the following 3 parts however.}
+
+\item
+For this case, the code is in \ref{code:p3}.
+We see from figure \ref{fig:p3n4} that even with 4 points the interpolant does a good job compared to the sampled function at the same points.
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=1]{p3n4.pdf}
+\caption{The polynomial interpolant of $\sin(x)$ compared to samples of the same function. The interpolant does well and we don't see any strange behavior.}
+\label{fig:p3n4}
+\end{figure}
+
+\item
+The code for this case is also in \ref{code:p3}.
+We see from figure \ref{fig:p3n20} that this function does not do well with the equally spaced set of points.
+Either we miss the peak (N=4) or we exhibit the Runge effect (N=20), which show up as oscillations at the edges.
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=1]{p3n20.pdf}
+\caption{The polynomial interpolant of $1 / (1+16x^2)$ compared to samples of the same function. The interpolant does not work so well here, at low order the peak is missed, while at high order the Runge effect is exhibited.}
+\label{fig:p3n20}
+\end{figure}
+
+\item
+The code for this case is also in \ref{code:p3}.
+Repeating the previous problem, we see in figure \ref{fig:p3n20c} that the problem is fixed with the nonuniform sampling (although it cannot help with the low order case).
+This is because the Chebyshev points are more concentrated towards the boundaries, where the problem otherwise occurs.
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=1]{p3n20c.pdf}
+\caption{The polynomial interpolant of $1 / (1+16x^2)$ compared to samples of the same function. Using nonuniform sampling points in the interpolant (specifically, the Chebyshev points) removes the Runge phenomena.}
+\label{fig:p3n20c}
+\end{figure}
+
+\end{enumerate}
+
 \clearpage
 \appendix
 \section{Code}
@@ -155,5 +208,6 @@ This is because the derivative is not continuous, which can be seen from the ana
 \lstinputlisting[label=code:p1m]{p1_fdmatrix.m}
 \lstinputlisting[label=code:p2]{p2.m}
 \lstinputlisting[label=code:p2m]{p2_fdmatrix.m}
+\lstinputlisting[label=code:p3]{p3.m}
 
 \end{document}
