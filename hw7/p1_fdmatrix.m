@@ -1,9 +1,9 @@
 function [D] = p1_fdmatrix(N)
-    ll = local_fdcoeffs([0 -1 -2 -3], 1)
-    l = local_fdcoeffs([1 0 -1 -2], 1)
+    ll = local_fdcoeffs([3 2 1 0], 1)
+    l = local_fdcoeffs([2 1 0 -1], 1)
     c = local_fdcoeffs([2 1 -1 -2], 1)
-    r = local_fdcoeffs([2 1 0 -1], 1)
-    rr = local_fdcoeffs([3 2 1 0], 1)
+    r = local_fdcoeffs([1 0 -1 -2], 1)
+    rr = local_fdcoeffs([0 -1 -2 -3], 1)
 end
 
 function [c] = taylor_coeffs(di, nterms)
