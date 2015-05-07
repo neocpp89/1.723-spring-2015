@@ -44,7 +44,7 @@
 }
 
 
-\title{1.723 HW7}
+\title{1.723 HW8}
 \author{Sachith  Dunatunga}
 
 \begin{document}
@@ -100,26 +100,97 @@ We can tell which is the higher order scheme (it traces the true solution for a 
 
 \section{Problem 2}
 \subsection{Part A}
-I was quite surprised that the 4th order centered difference for the convection term didn't have any wierd oscillations.
+We can see the results for standard finite difference schemes in figure \ref{fig:standard-fd}.
+
+\begin{figure}[!ht]
+\centering
+\begin{tabular}{c c}
+\includegraphics[scale=0.5]{p2a_128.pdf} & \includegraphics[scale=0.5]{p2a_256.pdf} \\
+\includegraphics[scale=0.5]{p2a_128_u3.pdf} & \includegraphics[scale=0.5]{p2a_256_u3.pdf}
+\end{tabular}
+\caption{The results of a standard finite difference implementation to solve the linear advection-diffusion equation.
+The top row uses a centered fourth order scheme for the advective term, while the bottom row uses a third order upwind scheme.
+We see that in the N = 128 case, there are oscillations when using the centered difference scheme, but these disappear for the N = 256 case.
+However, a close look at the velocity shows that the peak is propagating at a slightly higher speed than it should be; the upwind scheme gets this correct.
+}
+\label{fig:standard-fd}
+\end{figure}
+
+I was quite surprised that the 4th order centered difference for the convection term didn't have any wierd oscillations for N = 256.
+It looks like the grid is not fine enough to capture the sharp peak in the N = 128 case using the centered difference (it is not spread out over enough grid points for the fourth order scheme to propagate it sufficiently).
 I looked for high order upwinding schemes, but was only able to find simple coefficient-based versions up to 3rd order (these are commented out in the code).
-They work well, but the error from the 4th order centered difference is clearly much lower.
+They work well, but the error from the 4th order centered difference is clearly much lower with the exception that the velocity of propagation appears to be higher.
 
 The run time is actually quite fast as shown in the overview table \ref{tbl:runtime}, especially since I did something which I suspect is non-optimal and built matrices to perform sparse matrix-vector products.
+It may be faster to sum scaled versions of the permuted solution vector.
+
+\clearpage
+\subsection{Part B}
+We see the results of the compact finite difference method in figure \ref{fig:compact-fd}.
+
+\begin{figure}[!ht]
+\centering
+\begin{tabular}{c}
+\includegraphics[scale=0.8]{p2b_128.pdf} \\
+\includegraphics[scale=0.8]{p2b_256.pdf}
+\end{tabular}
+\caption{The results of a compact finite difference implementation to solve the linear advection-diffusion equation.
+We see that the character of both of these results is similar to the standard finite difference method, but the error is clearly lower.
+Moreover, the velocity issue appears to be corrected.
+Again with the smaller grid we see some trailing oscillations, but they are less severe than in the standard FD case.
+}
+\label{fig:compact-fd}
+\end{figure}
+
+As before, run times are specified in table \ref{tbl:runtime}.
+Although the results are much better, they did take far longer to compute.
+I don't know if MATLAB knows to use the Thomas algorithm here, but if doesn't I believe it would speed up computations significantly.
+
+\clearpage
+\subsection{Part C}
+We see the results of the spectral method in figure \ref{fig:spectral}. Run time results are in table \ref{tbl:runtime}.
+
+\begin{figure}[!ht]
+\centering
+\begin{tabular}{c}
+\includegraphics[scale=0.8]{p2c_128.pdf} \\
+\includegraphics[scale=0.8]{p2c_256.pdf}
+\end{tabular}
+\caption{The results of a spectral method implementation to solve the linear advection-diffusion equation.
+The results are quite good even with N = 128 (only the slightest hint of oscillation is detectable at the trailing edge when viewed in MATLAB).
+As expected, the propagation velocity is the correct value.
+Even with these high quality results, the computation time was quite short with MATLABs optimized FFT implementation.
+}
+\label{fig:spectral}
+\end{figure}
 
 \begin{table}[!ht]
 \centering
-\caption{Run times as measured by the tic-toc pair of commands in matlab. There is a slight flaw in that the plot generation time is included here, as it is in the compution loop, so ratios may be off. However, the additional time measured by this should be fixed for each type of method.}
+\caption{Run times as measured by the tic-toc pair of commands in MATLAB.
+Only the main time loop is included in the timing (one time setup of matrices or vectors is not included).
+There is a slight flaw in that the plot generation time is included here, as it is in the compution loop, so ratios may be off.
+However, the additional time measured by this should be a constant for each type of method.}
 \label{tbl:runtime}
 \begin{tabular}{r | c c}
 Method & Time for N = 128 & Time for N = 256 \\
 \midrule
-Standard Finite Difference & & 11.171974 s
+Standard Finite Difference & 5.60985 s & 6.80024 s \\
+Compact Finite Difference & 35.4462 s & 60.1563 s \\
+Spectral Method & 6.03252 s & 8.36635 s
 \end{tabular}
 \end{table}
+
+Despite the high quality of these results, the computation expense was only slightly greater than the standard finite difference method and much less than the compact finite difference method.
+Based on all of these results, for this problem I would rank the spectral method as the first choice.
+The choice for second is tougher, as the CFD method took much more computational time, but the quality of the results are arguably much better than standard FD.
+Since the standard FD method does not seem to get the propagation velocity correct, I will rank compact finite differences as second.
 
 \clearpage
 \appendix
 \section{Code}
 \lstinputlisting[label=code:p1]{p1.m}
+\lstinputlisting[label=code:p2]{p2.m}
+\lstinputlisting[label=code:cfd1g]{cfd1g.m}
+\lstinputlisting[label=code:cfd2g]{cfd2g.m}
 
 \end{document}
