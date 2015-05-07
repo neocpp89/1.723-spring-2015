@@ -5,6 +5,7 @@
 \usepackage{siunitx}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{booktabs}
 \usepackage{hyperref}
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
@@ -86,7 +87,7 @@ Plots of the imaginary component of these functions are shown in figure \ref{fig
 In the plots we have used a value of $h = 0.01$.
 This means that in the discrete cases the maximum wavenumber is given by $100\pi$, and the range of our plots is trimmed accordingly.
 
-\begin{figure}
+\begin{figure}[!ht]
 \centering
 \includegraphics[scale=1.0]{p1.pdf}
 \caption{Plots of the imaginary parts of $g_2(k), g_4(k)$, and $g_\infty(k)$. The spacing in the discrete cases is given by $h = 0.01$.}
@@ -96,6 +97,25 @@ This means that in the discrete cases the maximum wavenumber is given by $100\pi
 Although it is clear that both the standard finite difference schemes do well at low wavenumber, this is expected since this defines the rough features of the solution, and the higher wave numbers define finer features.
 It is still not clear to me where we can see the order of accuracy from these plots.
 We can tell which is the higher order scheme (it traces the true solution for a larger range of wavenumbers compared to the lower order one), but quantitatively I don't know how to extract the order of accuracy from this plot.
+
+\section{Problem 2}
+\subsection{Part A}
+I was quite surprised that the 4th order centered difference for the convection term didn't have any wierd oscillations.
+I looked for high order upwinding schemes, but was only able to find simple coefficient-based versions up to 3rd order (these are commented out in the code).
+They work well, but the error from the 4th order centered difference is clearly much lower.
+
+The run time is actually quite fast as shown in the overview table \ref{tbl:runtime}, especially since I did something which I suspect is non-optimal and built matrices to perform sparse matrix-vector products.
+
+\begin{table}[!ht]
+\centering
+\caption{Run times as measured by the tic-toc pair of commands in matlab. There is a slight flaw in that the plot generation time is included here, as it is in the compution loop, so ratios may be off. However, the additional time measured by this should be fixed for each type of method.}
+\label{tbl:runtime}
+\begin{tabular}{r | c c}
+Method & Time for N = 128 & Time for N = 256 \\
+\midrule
+Standard Finite Difference & & 11.171974 s
+\end{tabular}
+\end{table}
 
 \clearpage
 \appendix
