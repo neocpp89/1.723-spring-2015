@@ -96,9 +96,31 @@ as
 Although we need to divide by $(k^2_x + k^2_y) = 0$, in this case since it only affects the mean value of $\Psi$ we can arbitrarily set this term to a nonzero constant.
 This is because the mean value of the stream function is not important, only its derivatives, which are still accurate.
 
+\subsection{Part 3}
+Please see the listing \ref{code:solve-vel} in the appendix for the MATLAB code.
+The zip file included also contains the code.
+
+\subsection{Part 4}
+Please see the listing \ref{code:solve-conc} in the appendix for the MATLAB code.
+The zip file included also contains the code.
+
+\subsection{Part 8}
+Since our method is using the spectral method for spatial derivatives, the order is very high (dependent on the total number of grid points).
+However, because we use a Runge-Kutta 4 explicit scheme for time integration, we are limited to fourth order accuracy in time.
+The RK4 scheme has an interesting convergence region (and is slightly larger than the forward Euler scheme).
+
+Setting the viscosity contrast to a large number is probably not good for the current scheme used (explicit mobility).
+This is because explicit methods tend to become unstable if the solution variables change ``too much'' during a step.
+With a higher viscosity contrast, the mobilities can change more dramatically between time steps, unless much smaller steps are taken.
+For a large viscosity contrast, we will probably want to change to an implicit mobility step, where the stream function and vorticity are solved in a simultaneous manner.
+This will be more expensive, but should allow for larger viscosity contrasts (though we will still be limited by the RK4 scheme for time integration).
+
+For the time derivative, we can add more stages to the Runga-Kutta scheme (which actually improves the stability properties in addition to the order); the trade off is that more evaluations of spatial derivatives are done per time step.
+
 \clearpage
 \appendix
 \section{Code}
-% \lstinputlisting[label=code:test]{../code/test.m}
+\lstinputlisting[label=code:solve-vel]{../code/calculate_new_velocity.m}
+\lstinputlisting[label=code:solve-conc]{../code/calculate_new_concentration.m}
 
 \end{document}
