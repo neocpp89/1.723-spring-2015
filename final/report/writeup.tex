@@ -76,7 +76,7 @@ Thus, if the fourier transform of $\tilde{\Psi}$ is written as $\hat{\tilde{\Psi
     \widehat{\nabla^2 \tilde{\Psi}} &= -(k^2_x + k^2_y) \hat{\tilde{\Psi}}.
 \end{align}
 
-Since at zero frequency in both x and y we have $exp(0) = 1$, the fourier transform turns into the average value of the signal.
+Since at zero frequency in both x and y we have $\exp(0) = 1$, the fourier transform turns into the average value of the signal.
 In this case, since we only care about derivatives of the stream function $\Psi$, this constant is `free' and will not affect the results.
 
 \subsection{Part 2}
@@ -98,11 +98,42 @@ This is because the mean value of the stream function is not important, only its
 
 \subsection{Part 3}
 Please see the listing \ref{code:solve-vel} in the appendix for the MATLAB code.
+An optimized version of this function, shown in listing \ref{code:solve-vel-opt}, is used for the time stepping (e.g. we generate the wavenumber matrices outside the time loop).
 The zip file included also contains the code.
 
 \subsection{Part 4}
 Please see the listing \ref{code:solve-conc} in the appendix for the MATLAB code.
+An optimized version of this function, shown in listing \ref{code:solve-conc-opt}, is used for the time stepping (e.g. we generate the wavenumber matrices outside the time loop).
 The zip file included also contains the code.
+
+\subsection{Part 5}
+\begin{enumerate}
+\item For the concentration field, the most obvious feature we notice is the development of fingers in the flow.
+The initial concentration is show in figure \ref{fig:initial-conc}.
+Various snapshots in time are shown in figure \ref{fig:conc}.
+The initially (nearly) vertical ``interface'' (the two fluids are perfectly miscible, so there is no surface tension) quickly disappears.
+It looks the mixing should be enhanced by this, as the gradient is sharper along the boundary of the fingers and the arclength is longer as well.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=1.0]{initial_conc.png}
+\caption{The initial concentration used for all simulations. There are small pertubations to the otherwise vertical boundary in concentration.}
+\label{fig:initial-conc}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\begin{tabular}{c c c}
+\includegraphics[scale=0.8]{conc10_1.png} &
+\includegraphics[scale=0.8]{conc10_2.png} &
+\includegraphics[scale=0.8]{conc10_4.png} &
+\end{tabular}
+\caption{Concentration plots for R = $1, 2, 2.8$ (top to bottom) at times t $\approx 1, 2, 4$ seconds (left to right).}
+\label{fig:conc}
+\end{figure}
+
+\item
+\end{enumerate}
 
 \subsection{Part 8}
 Since our method is using the spectral method for spatial derivatives, the order is very high (dependent on the total number of grid points).
@@ -121,6 +152,8 @@ For the time derivative, we can add more stages to the Runga-Kutta scheme (which
 \appendix
 \section{Code}
 \lstinputlisting[label=code:solve-vel]{../code/calculate_new_velocity.m}
+\lstinputlisting[label=code:solve-vel-opt]{../code/calculate_new_velocity_opt.m}
 \lstinputlisting[label=code:solve-conc]{../code/calculate_new_concentration.m}
+\lstinputlisting[label=code:solve-conc-opt]{../code/calculate_new_concentration_opt.m}
 
 \end{document}
