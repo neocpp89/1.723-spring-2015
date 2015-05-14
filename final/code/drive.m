@@ -67,6 +67,8 @@ u_background(:, :, 1) = 1;
 
 tlist = [0.25, 0.5, 1, 2, 4];
 
+% I don't know if this is always available, so it is off by default.
+% parfor i=1:numel(R)
 for i=1:numel(R)
     j = 1;
     t = 0;
@@ -75,8 +77,9 @@ for i=1:numel(R)
     u_tilde = zeros(size(u_background));
     figure;
     c_hat = fft2(c);
-    dcsq = real(ifft2(mksq .* c_hat));
-    epsilon_c_saved(1) = mean((1 / Pe) * dcsq(:));
+    dcdx = real(ifft2(1i * mkx_odd .* c_hat));
+    dcdy = real(ifft2(1i * mky_odd .* c_hat));
+    epsilon_c_saved(1) = mean((1 / Pe) * (dcdx(:).^2 + dcdy(:).^2));
     varc_saved(1) = var(c(:));
     num_fingers_saved(1) = 0;
     t_saved(1) = 0;
@@ -140,8 +143,10 @@ for i=1:numel(R)
         t_saved(step) = t;
         num_fingers_saved(step) = dominant_k/(2*pi);
 
-        % show current time
-        fprintf('Time: %-5.5f/%-5.5f Current step: %d\n', t, min(tf,tlist(end)), step);
+        % show current time every once in a while
+        if (mod(step, 50) == 0)
+            fprintf('[R=%g] Time: %-5.5f/%-5.5f Current step: %d\n', R(i), t, min(tf,tlist(end)), step);
+        end
 
         % save figures at various times
         if (tlist(j) < t)
@@ -161,7 +166,7 @@ for i=1:numel(R)
             title(sprintf('Concentration Field at t=%g\n(R=%g)', t, R(i)));
             xlabel('X');
             ylabel('Y');
-            print(sprintf('../report/conc%d_%d.png', 10*R(i), tlist(j)), '-dpng');
+            print(sprintf('../report/conc%d_%d.png', 10*R(i), 100*tlist(j)), '-dpng');
 
             j = j + 1;
             if (j > numel(tlist))
@@ -199,7 +204,7 @@ for i=1:numel(R)
                 title(sprintf('Number of Fingers\n(R=%g)', R(i)));
                 xlabel('Time');
                 ylabel('Est. Number of Fingers');
-                print(sprintf('../report/concstats_%d.png', 100*tlist(j-1)), '-dpng');
+                print(sprintf('../report/concstats_%d.png', 10*R(i)), '-dpng');
                 break;
             end
         end

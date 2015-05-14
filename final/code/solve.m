@@ -22,7 +22,7 @@ view([0 0 1]);
 axis equal square;
 
 Pe = 2500;
-R = 2;
+R = 1;
 
 t = 0;
 tf = 4;
@@ -65,3 +65,5 @@ while t < tf
     t = t + dt;
     step = step + 1;
 end
+
+% var(c(:));
